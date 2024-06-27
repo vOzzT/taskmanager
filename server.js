@@ -4,7 +4,7 @@ const cors = require('cors');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
 const url =
-'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
+    'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 client.connect();
 
@@ -23,25 +23,23 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post('/api/login', async (req, res, next) =>
-{
+app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
     // outgoing: id, firstName, lastName, error
     var error = '';
     const { login, password } = req.body;
     const db = client.db('COP4331');
     const results = await
-    db.collection('Users').find({Login:login,Password:password}).toArray();
+        db.collection('Users').find({ Login: login, Password: password }).toArray();
     var id = -1;
     var fn = '';
     var ln = '';
-    if( results.length > 0 )
-    {
-    id = results[0].UserId;
-    fn = results[0].FirstName;
-    ln = results[0].LastName;
+    if (results.length > 0) {
+        id = results[0].UserId;
+        fn = results[0].FirstName;
+        ln = results[0].LastName;
     }
-    var ret = { id:id, firstName:fn, lastName:ln, error:''};
+    var ret = { id: id, firstName: fn, lastName: ln, error: '' };
     res.status(200).json(ret);
 });
 
@@ -72,7 +70,7 @@ app.post('/api/signup', async (req, res, next) => {
         return res.status(409).send("Email already exists");
 
     } else if(loginExists){
-        
+
         console.log("User " + login + " already exist!");
         return res.status(409).send("Login already exists");
 
@@ -80,13 +78,18 @@ app.post('/api/signup', async (req, res, next) => {
         db.collection('Users').insertOne(newUser, function(err, res){
             if (err) throw err;
         });
-        const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         console.log("User " + login + " added!");
-        var ret = { _id: results[0]._id, firstName: firstname, lastName: lastname, error: '' };
+        const results = await db.collection('Users').find({Login: req.body.login}).toArray();
+        //console.log("User " + login + " added!");
+        const insertedData = await db.collection('Users').find({}).toArray();
+        var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
         res.status(200).json(ret);
     }
 
+
 });
+
+
 
 
 app.listen(5001); // start Node + Express server on port 5001
