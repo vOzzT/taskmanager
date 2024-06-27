@@ -27,15 +27,19 @@ app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
     // outgoing: id, firstName, lastName, error
     var error = '';
+
     const { login, password } = req.body;
+
     const db = client.db('COP4331');
-    const results = await
-        db.collection('Users').find({ Login: login, Password: password }).toArray();
+
+    const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
+
     var id = -1;
     var fn = '';
     var ln = '';
+    
     if (results.length > 0) {
-        id = results[0].UserId;
+        id = results[0]._id;
         fn = results[0].FirstName;
         ln = results[0].LastName;
     }
@@ -59,7 +63,7 @@ app.post('/api/signup', async (req, res, next) => {
     const loginExists = await db.collection('Users').findOne({Login: req.body.login});
     const emailExists = await db.collection('Users').findOne({Email: req.body.email});
 
-    if ( (loginExists && emailExists)){
+    if ((loginExists && emailExists)){
 
         console.log("User " + login + " and email " + email + " already exist!");
         return res.status(409).send("Login and email already exist");
@@ -69,18 +73,18 @@ app.post('/api/signup', async (req, res, next) => {
         console.log("Email " + email + " already exists!");
         return res.status(409).send("Email already exists");
 
-    } else if(loginExists){
+    } else if (loginExists){
 
         console.log("User " + login + " already exist!");
         return res.status(409).send("Login already exists");
 
-    }else{
+    } else {
         db.collection('Users').insertOne(newUser, function(err, res){
             if (err) throw err;
         });
         console.log("User " + login + " added!");
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
-        const insertedData = await db.collection('Users').find({}).toArray();
+        const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
         res.status(200).json(ret);
     }
