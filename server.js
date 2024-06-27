@@ -80,7 +80,6 @@ app.post('/api/signup', async (req, res, next) => {
         });
         console.log("User " + login + " added!");
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
-        //console.log("User " + login + " added!");
         const insertedData = await db.collection('Users').find({}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
         res.status(200).json(ret);
