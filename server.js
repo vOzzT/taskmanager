@@ -95,4 +95,4 @@ app.post('/api/signup', async (req, res, next) => {
 
 
 
-app.listen(5001); // start Node + Express server on port 5001
+app.listen(5000); // start Node + Express server on port 5001
