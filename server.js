@@ -5,9 +5,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.set('port', (process.env.PORT || 5000);
+require('dotenv').config();
+const url = process.env.MONGODB_URI;
 const MongoClient = require('mongodb').MongoClient;
-const ObjectId = require('mongodb').ObjectId;
-const url = 'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 client.connect();
 
