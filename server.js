@@ -1,7 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const app = express();
+const PORT = process.env.PORT || 5000;
+app.set('port', (process.env.PORT || 5000);
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 const url = 'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
@@ -233,4 +236,13 @@ app.post('/api/addTag', async (req, res, next) => {
 
 });
 
-app.listen(5000); // start Node + Express server on port 5001
+if(process.eng.NODE_ENV === 'production')
+{
+    app.use(express.static('frontend/build'));
+    app.get('*', (req, res) =>
+        {
+            res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+        });
+}
+
+app.listen(PORT, () =>{console.log('Server listening on port' + PORT);};
