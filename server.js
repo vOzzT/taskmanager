@@ -6,6 +6,8 @@ const url = process.env.MONGODB_URI;
 const MongoClient = require('mongodb').MongoClient;
 const client = new MongoClient(url);
 client.connect();
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 const path = require('path');
 const PORT = process.env.PORT || 5000;
@@ -25,6 +27,20 @@ app.use((req, res, next) => {
         'GET, POST, PATCH, DELETE, OPTIONS'
     );
     next();
+});
+
+app.get('/verify/:token', (req, res)=>{
+    const {token} = req.params;
+  
+    // Verifying the JWT token 
+    jwt.verify(token, 'ourSecretKey', function(err, decoded) {
+        if (err) {
+            console.log(err);
+            res.send("Email verification failed, possibly the link is invalid or expired");}
+        else {
+            res.send("Email verified successfully\n CLOSE!");
+        }
+    });
 });
 
 app.post('/api/login', async (req, res, next) => {
@@ -59,10 +75,45 @@ app.post('/api/signup', async (req, res, next) => {
     
     const { login, password, firstname, lastname, phone, email } = req.body;
 
-    let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email };
+    let User = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email };
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'poosdtaskmanagerapi@gmail.com',
+            pass: 'omasndeiaraxooyd'
+        }
+    });
+    
+    const token = jwt.sign({data: 'Token Data'  }, 'ourSecretKey', { expiresIn: '10m' }  
+    );    
+    
+    const mailConfigurations = {
+    
+        // It should be a string of sender/server email
+        from: 'poosdtaskmanagerapi@gmail.com',
+    
+        to: email,
+    
+        // Subject of Email
+        subject: 'Email Verification',
+        
+        // This would be the text of email body
+        text: `Hi! There, You have recently visited 
+               our website and entered your email.
+               Please follow the given link to verify your email
+               https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} 
+               Thanks`
+    };
+    
+    transporter.sendMail(mailConfigurations, function(error, info){
+        if (error) throw Error(error);
+        console.log('Email Sent Successfully');
+        console.log(info);
+    });
 
     const db = client.db('COP4331');
-
+ 
     //Checks to see if login or email is taken
     const loginExists = await db.collection('Users').findOne({Login: req.body.login});
     const emailExists = await db.collection('Users').findOne({Email: req.body.email});
@@ -92,7 +143,6 @@ app.post('/api/signup', async (req, res, next) => {
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
         res.status(200).json(ret);
     }
-
 
 });
 
