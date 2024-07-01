@@ -75,7 +75,7 @@ app.post('/api/signup', async (req, res, next) => {
     
     const { login, password, firstname, lastname, phone, email } = req.body;
 
-    let User = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email };
+    let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email };
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
