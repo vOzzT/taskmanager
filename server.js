@@ -1,18 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const path = require('path');
-const app = express();
-const PORT = process.env.PORT || 5000;
-app.set('port', (process.env.PORT || 5000));
 require('dotenv').config();
 const url = process.env.MONGODB_URI;
 const MongoClient = require('mongodb').MongoClient;
 const client = new MongoClient(url);
 client.connect();
 
+const path = require('path');
+const PORT = process.env.PORT || 5000;
+const app = express();
+app.set('port', (process.env.PORT || 5000));
 app.use(cors());
 app.use(bodyParser.json());
+
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
@@ -236,7 +237,7 @@ app.post('/api/addTag', async (req, res, next) => {
 
 });
 
-if(process.eng.NODE_ENV === 'production')
+if(process.env.NODE_ENV === 'production')
 {
     app.use(express.static('frontend/build'));
     app.get('*', (req, res) =>
@@ -245,4 +246,4 @@ if(process.eng.NODE_ENV === 'production')
         });
 }
 
-app.listen(PORT, () =>{console.log('Server listening on port' + PORT);});
+app.listen(PORT, () =>{console.log('Server listening on port ' + PORT);});
