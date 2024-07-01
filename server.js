@@ -3,8 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
-const url =
-    'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
+const url = 'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 client.connect();
 
@@ -92,7 +91,31 @@ app.post('/api/signup', async (req, res, next) => {
 
 });
 
+app.post('/api/addEvent', async (req, res, next) => {
+    // incoming: name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // outgoing: id, name, UserId, error
+    var error = '';
+
+    const { name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+
+    let newEvent = { Name: name, Description: description, Color: color, Tags: tags, isRecurring: isRecurring, hasReminder: hasReminder, UserId: userId, EndDate: endDate, StartDate: startDate };
+
+    const db = client.db('COP4331');
+
+    //const results = await db.collection('Events');
+
+    db.collection('Events').insertOne(newEvent, function(err, res){
+        if (err) throw err;
+    });
+    console.log("Event " + name + " added!");
+    const results = await db.collection('Events').find({Name: req.body.name}).toArray();
+    const insertedData = await db.collection('Events').find({Name: req.body.name}).toArray();
+    var ret = { id: insertedData[0]._id, name: name, description: description, error: '' };
+    res.status(200).json(ret);
+
+});
 
 
 
-app.listen(5001); // start Node + Express server on port 5001
+
+app.listen(5000); // start Node + Express server on port 5001
