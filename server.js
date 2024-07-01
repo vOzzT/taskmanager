@@ -216,13 +216,13 @@ app.post('/api/addTag', async (req, res, next) => {
 
     const { name, color, userId } = req.body;
 
-    let newEvent = { Name: name, Color: color, UserId: userId };
+    let newTag = { Name: name, Color: color, UserId: userId };
 
     const db = client.db('COP4331');
 
     //const results = await db.collection('Events');
 
-    db.collection('Tags').insertOne(newEvent, function(err, res){
+    db.collection('Tags').insertOne(newTag, function(err, res){
         if (err) throw err;
     });
     console.log("Tag " + name + " added!");
