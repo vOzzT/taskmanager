@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 const url = 'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 client.connect();
@@ -115,7 +116,121 @@ app.post('/api/addEvent', async (req, res, next) => {
 
 });
 
+app.post('/api/searchEvent', async (req, res, next) => {
+    // incoming: name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // outgoing: events, error
+    const { name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+    const db = client.db('COP4331');
+    
+    // Build the search query object
+    let query = {};
+
+    if (name) query.Name = { $regex: name, $options: 'i' };
+    if (description) query.Description = { $regex: description, $options: 'i' };
+    if (color) query.Color = { $regex: color, $options: 'i' };
+    if (tags) query.Tags = { $regex: tags, $options: 'i' };
+    if (isRecurring !== undefined) query.isRecurring = isRecurring;
+    if (hasReminder !== undefined) query.hasReminder = hasReminder;
+    if (userId) query.UserId = userId;
+    if (endDate) query.EndDate = { $regex: endDate, $options: 'i' };
+    if (startDate) query.StartDate = { $regex: startDate, $options: 'i' };
+
+    try {
+        const events = await db.collection('Events').find(query).toArray();
+        res.status(200).json({ events: events, error: '' });
+    } catch (err) {
+        res.status(500).json({ events: [], error: err.toString() });
+    }
+});
+
+app.post('/api/updateEvent', async (req, res, next) => {
+    // incoming: id, name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // outgoing: updatedEvent, error
+    const { id, name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+    const db = client.db('COP4331');
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid event ID' });
+    }
+
+    let updatedFields = {};
+
+    if (name) updatedFields.Name = name;
+    if (description) updatedFields.Description = description;
+    if (color) updatedFields.Color = color;
+    if (tags) updatedFields.Tags = tags;
+    if (isRecurring !== undefined) updatedFields.isRecurring = isRecurring;
+    if (hasReminder !== undefined) updatedFields.hasReminder = hasReminder;
+    if (userId) updatedFields.UserId = userId;
+    if (endDate) updatedFields.EndDate = endDate;
+    if (startDate) updatedFields.StartDate = startDate;
+
+    try {
+        const result = await db.collection('Events').updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updatedFields }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        const updatedEvent = await db.collection('Events').findOne({ _id: new ObjectId(id) });
+        res.status(200).json({ updatedEvent, error: '' });
+    } catch (err) {
+        res.status(500).json({ error: err.toString() });
+    }
+});
+
+app.post('/api/deleteEvent', async (req, res, next) => {
+    // incoming: id
+    // outgoing: success, error
+    const { id } = req.body;
+    const db = client.db('COP4331');
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid event ID' });
+    }
+
+    try {
+        const result = await db.collection('Events').deleteOne({ _id: new ObjectId(id) });
+
+        console.log('Delete result:', result);
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        res.status(200).json({ success: true, error: '' });
+    } catch (err) {
+        console.error('Error deleting event:', err);
+        res.status(500).json({ error: err.toString() });
+    }
+});
 
 
+app.post('/api/addTag', async (req, res, next) => {
+    // incoming: name, color, userId
+    // outgoing: id, name, UserId
+    var error = '';
+
+    const { name, color, userId } = req.body;
+
+    let newEvent = { Name: name, Color: color, UserId: userId };
+
+    const db = client.db('COP4331');
+
+    //const results = await db.collection('Events');
+
+    db.collection('Tags').insertOne(newEvent, function(err, res){
+        if (err) throw err;
+    });
+    console.log("Tag " + name + " added!");
+    const results = await db.collection('Tags').find({Name: req.body.name}).toArray();
+    const insertedData = await db.collection('Tags').find({Name: req.body.name}).toArray();
+    var ret = { id: insertedData[0]._id, name: name, userId: userId, error: '' };
+    res.status(200).json(ret);
+
+});
 
 app.listen(5000); // start Node + Express server on port 5001
