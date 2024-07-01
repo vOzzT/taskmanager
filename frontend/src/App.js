@@ -1,7 +1,7 @@
-import Home from './Home.jsx'
-import Login from './Login.jsx';
-import SignUp from './SignUp.jsx';
-import Calendar from './Calendar.jsx';
+import Home from './components/Home.jsx'
+import Login from './components/Login.jsx';
+import SignUp from './components/SignUp.jsx';
+import Calendar from './components/Calendar.jsx';
 
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 function App() {
