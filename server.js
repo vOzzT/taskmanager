@@ -42,6 +42,7 @@ app.use((req, res, next) => {
 app.get('/verify/:token', (req, res)=>{
     const {token, id} = req.params;
     const db = client.db('COP4331');
+    console.log(id);
   
     // Verifying the JWT token 
     jwt.verify(token, 'ourSecretKey', function(err, decoded) {
@@ -51,7 +52,7 @@ app.get('/verify/:token', (req, res)=>{
         else {
             res.send("Email verified successfully\n CLOSE!");
             db.collection('Users').updateOne(
-                { _id: new ObjectId(id) },
+                { _id: id },
                 { $set: isVerified =false }
             );
         }
