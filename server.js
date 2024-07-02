@@ -41,6 +41,7 @@ app.use((req, res, next) => {
 
 app.get('/verify/:token', (req, res)=>{
     const {token, id} = req.params;
+    const db = client.db('COP4331');
   
     // Verifying the JWT token 
     jwt.verify(token, 'ourSecretKey', function(err, decoded) {
