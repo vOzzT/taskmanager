@@ -16,6 +16,16 @@ app.set('port', (process.env.PORT || 5000));
 app.use(cors());
 app.use(bodyParser.json());
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'poosdtaskmanagerapi@gmail.com',
+        pass: 'lpqbilhjzxgxsqvs'
+    }
+});
+
+const token = jwt.sign({data: 'Token Data'  }, 'ourSecretKey', { expiresIn: '10m' });   
+
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
@@ -30,7 +40,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/verify/:token', (req, res)=>{
-    const {token} = req.params;
+    const {token, id} = req.params;
   
     // Verifying the JWT token 
     jwt.verify(token, 'ourSecretKey', function(err, decoded) {
@@ -39,6 +49,10 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
+            db.collection('Users').updateOne(
+                { _id: new ObjectId(id) },
+                { $set: isVerified =false }
+            );
         }
     });
 });
@@ -75,20 +89,9 @@ app.post('/api/signup', async (req, res, next) => {
     
     const { login, password, firstname, lastname, phone, email } = req.body;
 
-    let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email };
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'poosdtaskmanagerapi@gmail.com',
-            pass: 'lpqbilhjzxgxsqvs'
-        }
-    });
+    let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false}; 
     
-    const token = jwt.sign({data: 'Token Data'  }, 'ourSecretKey', { expiresIn: '10m' }  
-    );    
-    
-    const mailConfigurations = {
+    const verificationEmail = {
     
         // It should be a string of sender/server email
         from: 'poosdtaskmanagerapi@gmail.com',
@@ -102,7 +105,7 @@ app.post('/api/signup', async (req, res, next) => {
         text: `Press this link to verify your email: https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} Thanks`
     };
     
-    transporter.sendMail(mailConfigurations, function(error, info){
+    transporter.sendMail(verificationEmail, function(error, info){
         if (error) throw Error(error);
         console.log('Email Sent Successfully');
         console.log(info);
