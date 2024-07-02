@@ -99,11 +99,7 @@ app.post('/api/signup', async (req, res, next) => {
         subject: 'Email Verification',
         
         // This would be the text of email body
-        text: `Hi! There, You have recently visited 
-               our website and entered your email.
-               Please follow the given link to verify your email
-               https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} 
-               Thanks`
+        text: `Hi! There, Please click this link to verify your email:"\n" https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} "\n" Thanks`
     };
     
     transporter.sendMail(mailConfigurations, function(error, info){
