@@ -1,15 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const app = express();
+require('dotenv').config();
+const url = process.env.MONGODB_URI;
 const MongoClient = require('mongodb').MongoClient;
-const url =
-    'mongodb+srv://API:L81XKZO9TXSI9D3U@cardlab.no38z0r.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 client.connect();
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
+const path = require('path');
+const PORT = process.env.PORT || 5000;
+const app = express();
+app.set('port', (process.env.PORT || 5000));
 app.use(cors());
 app.use(bodyParser.json());
+
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
@@ -21,6 +27,20 @@ app.use((req, res, next) => {
         'GET, POST, PATCH, DELETE, OPTIONS'
     );
     next();
+});
+
+app.get('/verify/:token', (req, res)=>{
+    const {token} = req.params;
+  
+    // Verifying the JWT token 
+    jwt.verify(token, 'ourSecretKey', function(err, decoded) {
+        if (err) {
+            console.log(err);
+            res.send("Email verification failed, possibly the link is invalid or expired");}
+        else {
+            res.send("Email verified successfully\n CLOSE!");
+        }
+    });
 });
 
 app.post('/api/login', async (req, res, next) => {
@@ -57,8 +77,43 @@ app.post('/api/signup', async (req, res, next) => {
 
     let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email };
 
-    const db = client.db('COP4331');
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'poosdtaskmanagerapi@gmail.com',
+            pass: 'omasndeiaraxooyd'
+        }
+    });
+    
+    const token = jwt.sign({data: 'Token Data'  }, 'ourSecretKey', { expiresIn: '10m' }  
+    );    
+    
+    const mailConfigurations = {
+    
+        // It should be a string of sender/server email
+        from: 'poosdtaskmanagerapi@gmail.com',
+    
+        to: email,
+    
+        // Subject of Email
+        subject: 'Email Verification',
+        
+        // This would be the text of email body
+        text: `Hi! There, You have recently visited 
+               our website and entered your email.
+               Please follow the given link to verify your email
+               https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} 
+               Thanks`
+    };
+    
+    transporter.sendMail(mailConfigurations, function(error, info){
+        if (error) throw Error(error);
+        console.log('Email Sent Successfully');
+        console.log(info);
+    });
 
+    const db = client.db('COP4331');
+ 
     //Checks to see if login or email is taken
     const loginExists = await db.collection('Users').findOne({Login: req.body.login});
     const emailExists = await db.collection('Users').findOne({Email: req.body.email});
@@ -89,10 +144,156 @@ app.post('/api/signup', async (req, res, next) => {
         res.status(200).json(ret);
     }
 
+});
+
+app.post('/api/addEvent', async (req, res, next) => {
+    // incoming: name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // outgoing: id, name, UserId, error
+    var error = '';
+
+    const { name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+
+    let newEvent = { Name: name, Description: description, Color: color, Tags: tags, isRecurring: isRecurring, hasReminder: hasReminder, UserId: userId, EndDate: endDate, StartDate: startDate };
+
+    const db = client.db('COP4331');
+
+    //const results = await db.collection('Events');
+
+    db.collection('Events').insertOne(newEvent, function(err, res){
+        if (err) throw err;
+    });
+    console.log("Event " + name + " added!");
+    const results = await db.collection('Events').find({Name: req.body.name}).toArray();
+    const insertedData = await db.collection('Events').find({Name: req.body.name}).toArray();
+    var ret = { id: insertedData[0]._id, name: name, description: description, error: '' };
+    res.status(200).json(ret);
 
 });
 
+app.post('/api/searchEvent', async (req, res, next) => {
+    // incoming: name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // outgoing: events, error
+    const { name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+    const db = client.db('COP4331');
+    
+    // Build the search query object
+    let query = {};
+
+    if (name) query.Name = { $regex: name, $options: 'i' };
+    if (description) query.Description = { $regex: description, $options: 'i' };
+    if (color) query.Color = { $regex: color, $options: 'i' };
+    if (tags) query.Tags = { $regex: tags, $options: 'i' };
+    if (isRecurring !== undefined) query.isRecurring = isRecurring;
+    if (hasReminder !== undefined) query.hasReminder = hasReminder;
+    if (userId) query.UserId = userId;
+    if (endDate) query.EndDate = { $regex: endDate, $options: 'i' };
+    if (startDate) query.StartDate = { $regex: startDate, $options: 'i' };
+
+    try {
+        const events = await db.collection('Events').find(query).toArray();
+        res.status(200).json({ events: events, error: '' });
+    } catch (err) {
+        res.status(500).json({ events: [], error: err.toString() });
+    }
+});
+
+app.post('/api/updateEvent', async (req, res, next) => {
+    // incoming: id, name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // outgoing: updatedEvent, error
+    const { id, name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+    const db = client.db('COP4331');
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid event ID' });
+    }
+
+    let updatedFields = {};
+
+    if (name) updatedFields.Name = name;
+    if (description) updatedFields.Description = description;
+    if (color) updatedFields.Color = color;
+    if (tags) updatedFields.Tags = tags;
+    if (isRecurring !== undefined) updatedFields.isRecurring = isRecurring;
+    if (hasReminder !== undefined) updatedFields.hasReminder = hasReminder;
+    if (userId) updatedFields.UserId = userId;
+    if (endDate) updatedFields.EndDate = endDate;
+    if (startDate) updatedFields.StartDate = startDate;
+
+    try {
+        const result = await db.collection('Events').updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updatedFields }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        const updatedEvent = await db.collection('Events').findOne({ _id: new ObjectId(id) });
+        res.status(200).json({ updatedEvent, error: '' });
+    } catch (err) {
+        res.status(500).json({ error: err.toString() });
+    }
+});
+
+app.post('/api/deleteEvent', async (req, res, next) => {
+    // incoming: id
+    // outgoing: success, error
+    const { id } = req.body;
+    const db = client.db('COP4331');
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid event ID' });
+    }
+
+    try {
+        const result = await db.collection('Events').deleteOne({ _id: new ObjectId(id) });
+
+        console.log('Delete result:', result);
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        res.status(200).json({ success: true, error: '' });
+    } catch (err) {
+        console.error('Error deleting event:', err);
+        res.status(500).json({ error: err.toString() });
+    }
+});
 
 
+app.post('/api/addTag', async (req, res, next) => {
+    // incoming: name, color, userId
+    // outgoing: id, name, UserId
+    var error = '';
 
-app.listen(5000); // start Node + Express server on port 5001
+    const { name, color, userId } = req.body;
+
+    let newTag = { Name: name, Color: color, UserId: userId };
+
+    const db = client.db('COP4331');
+
+    //const results = await db.collection('Events');
+
+    db.collection('Tags').insertOne(newTag, function(err, res){
+        if (err) throw err;
+    });
+    console.log("Tag " + name + " added!");
+    const results = await db.collection('Tags').find({Name: req.body.name}).toArray();
+    const insertedData = await db.collection('Tags').find({Name: req.body.name}).toArray();
+    var ret = { id: insertedData[0]._id, name: name, userId: userId, error: '' };
+    res.status(200).json(ret);
+
+});
+
+if(process.env.NODE_ENV === 'production')
+{
+    app.use(express.static('frontend/build'));
+    app.get('*', (req, res) =>
+        {
+            res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+        });
+}
+
+app.listen(PORT, () =>{console.log('Server listening on port ' + PORT);});

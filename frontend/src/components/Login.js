@@ -11,7 +11,7 @@ function Login() {
         var obj = { login: loginName.value, password: loginPassword.value };
         var js = JSON.stringify(obj);
         try {
-            const response = await fetch('http://localhost:5001/api/login',
+            const response = await fetch(buildPath('api/login'),
                 {
                     method: 'POST', body: js, headers: {
                         'Content-Type':
@@ -35,6 +35,20 @@ function Login() {
             return;
         }
     };
+
+    const app_name = 'taskmanager-poosd-b45429dde588'
+    function buildPath(route)
+    {
+    if (process.env.NODE_ENV === 'production')
+    {
+    return 'https://' + app_name + '.herokuapp.com/' + route;
+    }
+    else
+    {
+    return 'http://localhost:5000/' + route;
+    }
+    }
+
     return (
         <div id="loginDiv">
             <span id="inner-title">PLEASE LOG IN</span><br />
