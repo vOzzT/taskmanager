@@ -50,10 +50,9 @@ app.get('/verify/:token', (req, res)=>{
         else {
             res.send("Email verified successfully\n CLOSE!");
             id = decoded.id;
-            db.collection('Users').updateOne(
-                {"_id": id},
-                {$set:{isVerified: true}}
-            );
+            let res = db.collection('Users').findOne({_id: id}).toArray();
+            newId = res[0]._id;
+            db.collection('Users').updateOne({_id: newId}, {$set:{isVerified: true}});
         }
     });
 });
