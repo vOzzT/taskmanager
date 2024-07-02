@@ -23,8 +23,7 @@ const transporter = nodemailer.createTransport({
         pass: 'lpqbilhjzxgxsqvs'
     }
 });
-
-const token = jwt.sign({data: 'Token Data'  }, 'ourSecretKey', { expiresIn: '10m' });   
+  
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -41,6 +40,7 @@ app.use((req, res, next) => {
 
 app.get('/verify/:token', (req, res)=>{
     const {token} = req.params;
+    const db = client.db('COP4331');
   
     // Verifying the JWT token 
     jwt.verify(token, 'ourSecretKey', function(err, decoded) {
@@ -49,6 +49,11 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
+            id = decoded.id;
+            db.collection('Users').updateOne(
+                {_id: id},
+                {$set:{isVerified: true}}
+            );
         }
     });
 });
@@ -116,7 +121,14 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
+
+        let mail = {
+            "id": insertedData[0]._id,
+            "data": 'Token Data'
+        }
         
+        const token = jwt.sign(mail, 'ourSecretKey', { expiresIn: '10m' }); 
+
         const verificationEmail = {
     
             // It should be a string of sender/server email
