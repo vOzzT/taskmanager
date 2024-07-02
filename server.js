@@ -40,9 +40,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/verify/:token', (req, res)=>{
-    const {token, id} = req.params;
-    const db = client.db('COP4331');
-    console.log(id);
+    const {token} = req.params;
   
     // Verifying the JWT token 
     jwt.verify(token, 'ourSecretKey', function(err, decoded) {
@@ -51,10 +49,6 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
-            db.collection('Users').updateOne(
-                { _id: id },
-                { $set: isVerified =false }
-            );
         }
     });
 });
@@ -92,26 +86,6 @@ app.post('/api/signup', async (req, res, next) => {
     const { login, password, firstname, lastname, phone, email } = req.body;
 
     let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false}; 
-    
-    const verificationEmail = {
-    
-        // It should be a string of sender/server email
-        from: 'poosdtaskmanagerapi@gmail.com',
-    
-        to: email,
-    
-        // Subject of Email
-        subject: 'Email Verification For Taskmanager App',
-        
-        // This would be the text of email body
-        text: `Press this link to verify your email: https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} Thanks`
-    };
-    
-    transporter.sendMail(verificationEmail, function(error, info){
-        if (error) throw Error(error);
-        console.log('Email Sent Successfully');
-        console.log(info);
-    });
 
     const db = client.db('COP4331');
  
@@ -142,6 +116,27 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
+        
+        const verificationEmail = {
+    
+            // It should be a string of sender/server email
+            from: 'poosdtaskmanagerapi@gmail.com',
+        
+            to: email,
+        
+            // Subject of Email
+            subject: 'Email Verification For Taskmanager App',
+            
+            // This would be the text of email body
+            text: `Press this link to verify your email: https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} Thanks`
+        };
+        
+        transporter.sendMail(verificationEmail, function(error, info){
+            if (error) throw Error(error);
+            console.log('Email Sent Successfully');
+            console.log(info);
+        });
+
         res.status(200).json(ret);
     }
 
