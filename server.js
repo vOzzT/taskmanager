@@ -81,7 +81,7 @@ app.post('/api/signup', async (req, res, next) => {
         service: 'gmail',
         auth: {
             user: 'poosdtaskmanagerapi@gmail.com',
-            pass: 'omasndeiaraxooyd'
+            pass: 'lpqbilhjzxgxsqvs'
         }
     });
     
