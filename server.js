@@ -96,10 +96,10 @@ app.post('/api/signup', async (req, res, next) => {
         to: email,
     
         // Subject of Email
-        subject: 'Email Verification',
+        subject: 'Email Verification For Taskmanager App',
         
         // This would be the text of email body
-        text: `Press this link to verify your email: <a href=https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token}> Thanks`
+        text: `Press this link to verify your email: https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} Thanks`
     };
     
     transporter.sendMail(mailConfigurations, function(error, info){
