@@ -50,8 +50,8 @@ app.get('/verify/:token', (req, res)=>{
         else {
             res.send("Email verified successfully\n CLOSE!");
             decId = decoded.id;
-            console.log(insertedData[0]._id);
-            console.log(db.collections('Users').findOneAndUpdate({_id: decId},{$set: { isVerified: true}}));
+            console.log(decId);
+            console.log(db.collections('Users').updateOne({_id: decId},{$set: { isVerified: true}}));
         }
     });
     
