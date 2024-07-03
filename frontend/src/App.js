@@ -3,12 +3,12 @@ import Login from './components/Login.jsx';
 import SignUp from './components/SignUp.jsx';
 import Calendar from './components/Calendar.jsx';
 
-import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 function App() {
  
     return (
       <Router>
-        <Switch>
+        <Routes>
 
           <Route exact path = "/">
             <Home/>
@@ -26,7 +26,7 @@ function App() {
             <Calendar/>
           </Route>
 
-        </Switch>
+        </Routes>
       </Router>
     );
 }
