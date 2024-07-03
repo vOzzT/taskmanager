@@ -140,7 +140,6 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
-        console.log(insertedData[0]._id);
         let mail = {
             "id": insertedData[0]._id,
             "data": 'Token Data'
