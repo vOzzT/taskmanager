@@ -18,6 +18,10 @@ function SignUp() {
     var firstName;
     var lastName;
 
+    const [firstName, setFirst] = useState('');
+
+    const [lastName, setLast] = useState('');
+    
     const [user, setUser] = useState('');
     const [validName, setValidName] = useState(false);
     const [userFocus, setUserFocus] = useState(false);
@@ -70,8 +74,22 @@ function SignUp() {
     }, [email])
 
     useEffect(() => {
+        const result = firstName;
+        console.log(result);
+        console.log(firstName);
+        setFirst(result);
+    }, [firstName])
+
+    useEffect(() => {
+        const result = lastName;
+        console.log(result);
+        console.log(lastName);
+        setLast(result);
+    }, [lastName])
+
+    useEffect(() => {
         setErrMsg('');
-    }, [user, pwd, phone, email])
+    }, [user, pwd, phone, email, firstName, lastName])
 
     
 
@@ -160,10 +178,24 @@ function SignUp() {
                         <form onSubmit={handleSubmit}>
                             <hr/>
                                 <label className='buttonHeader' htmlFor="firstName" >First Name:</label>
-                                <input type = "text" id = "firstName" value = {firstName}></input>
+                                <! --<input type = "text" id = "firstName" value = {firstName}></input>-->
+                            <input type="text"
+                                id="firstName"
+                                autoComplete="off"
+                                onChange={(e) => setFirst(e.target.value)}
+                                value={firstName}
+                                required
+                            />
                             <hr/>
                                 <label className='buttonHeader' htmlFor="lastName" >Last Name:</label>
-                                <input type = "text" id = "lastName" value = {lastName}></input>
+                                <! -- <input type = "text" id = "lastName" value = {lastName}></input>-->
+                            <input type="text"
+                                id="lastName"
+                                autoComplete="off"
+                                onChange={(e) => setLast(e.target.value)}
+                                value={lastName}
+                                required
+                            />
                             <hr/>
 
 
