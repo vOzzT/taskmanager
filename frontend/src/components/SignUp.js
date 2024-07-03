@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { useRef, useState, useEffect } from 'react';
 import {faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import '../css/accessibility.css'
+import '../css/index.css'
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -83,11 +85,12 @@ function SignUp() {
             return;
         }
 
-        var obj = { login: user, password: pwd, firstname: firstName, lastname: lastName, phone: phone, email: email};
+        var obj = { login: user, password: pwd, firstname: firstName, lastname: lastName,  phone: phone, email: email};
         var js = JSON.stringify(obj);
         
         try {
-            const response = await fetch(buildPath(api/signup),{method:'POST',body:js,headers:{'Content-Type':'application/json'}});
+            const response = await fetch(buildPath("api/signup"),
+            { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
         
             var res = JSON.parse(await response.text());
 
@@ -100,7 +103,7 @@ function SignUp() {
             //need value attrib on inputs for this
             setUser('');
             setPwd('');
-            setMatchPwd('');
+            //setMatchPwd('');
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
