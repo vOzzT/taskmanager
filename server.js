@@ -51,7 +51,6 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verified successfully\n CLOSE!");
             decId = decoded.id;
             db.collections('Users').findOneAndUpdate({_id: decId},{$set: { isVerified: true}});
-            db.close();
         }
     });
     
@@ -80,7 +79,7 @@ app.post('/api/login', async (req, res, next) => {
     var ret = { id: id, firstName: fn, lastName: ln, error: '' };
     res.status(200).json(ret);
 
-    db.close();
+
 });
 
 app.post('/api/signup', async (req, res, next) => {
@@ -122,7 +121,7 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
-        db.close();
+
         let mail = {
             "id": insertedData[0]._id,
             "data": 'Token Data'
@@ -177,7 +176,6 @@ app.post('/api/addEvent', async (req, res, next) => {
     var ret = { id: insertedData[0]._id, name: name, description: description, error: '' };
     res.status(200).json(ret);
 
-    db.close();
 });
 
 app.post('/api/searchEvent', async (req, res, next) => {
@@ -206,7 +204,6 @@ app.post('/api/searchEvent', async (req, res, next) => {
         res.status(500).json({ events: [], error: err.toString() });
     }
 
-    db.close();
 });
 
 app.post('/api/updateEvent', async (req, res, next) => {
@@ -247,7 +244,6 @@ app.post('/api/updateEvent', async (req, res, next) => {
         res.status(500).json({ error: err.toString() });
     }
 
-    db.close();
 });
 
 app.post('/api/deleteEvent', async (req, res, next) => {
@@ -275,7 +271,6 @@ app.post('/api/deleteEvent', async (req, res, next) => {
         res.status(500).json({ error: err.toString() });
     }
 
-    db.close();
 });
 
 
@@ -301,7 +296,6 @@ app.post('/api/addTag', async (req, res, next) => {
     var ret = { id: insertedData[0]._id, name: name, userId: userId, error: '' };
     res.status(200).json(ret);
 
-    db.close();
 });
 
 if(process.env.NODE_ENV === 'production')
