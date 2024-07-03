@@ -87,7 +87,7 @@ app.post('/api/login', async (req, res, next) => {
             return res.status(400).json({ message: 'Invalid Username or Password' });
         }
 
-        var ret = { id: user._id, firstName: user.FirstNamefn, lastName: user.LastName, error: '' };
+        var ret = { id: user._id, firstName: user.FirstName, lastName: user.LastName, error: '' };
         res.status(200).json(ret);
 
     } catch (error) {
