@@ -69,8 +69,6 @@ app.post('/api/login', async (req, res, next) => {
 
     const db = client.db('COP4331');
 
-    //const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
-
     try {
 
         // Find the user by Username
@@ -80,8 +78,6 @@ app.post('/api/login', async (req, res, next) => {
         }
 
         // Compare the Password
-        console.log(user.Password);
-        console.log(bcrypt.compare(password, user.Password));
         const isPasswordValid = await bcrypt.compare(password, user.Password);
         if (!isPasswordValid) {
             return res.status(400).json({ message: 'Invalid Username or Password' });
