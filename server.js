@@ -68,7 +68,7 @@ app.post('/api/login', async (req, res, next) => {
 
     const db = client.db('COP4331');
 
-    const isPasswordValid = await bcrypt.compare(Password, user.Password);
+    const isPasswordValid = await bcrypt.compare(password, user.Password);
 
     //const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
 
@@ -107,7 +107,7 @@ app.post('/api/signup', async (req, res, next) => {
     
     const { login, password, firstname, lastname, phone, email } = req.body;
 
-    const hashedPassword = await bcrypt.hash(Password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     let newUser = { Login: login, Password: hashedPassword, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false}; 
 
