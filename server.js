@@ -54,7 +54,7 @@ app.get('/verify/:token', (req, res)=>{
             let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
             ret.then(function(ret) {
                 console.log(ret);
-             })
+             }).catch((err) => {console.log('Error: ' + err);})
         }
     });
     
