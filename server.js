@@ -69,8 +69,6 @@ app.post('/api/login', async (req, res, next) => {
 
     const db = client.db('COP4331');
 
-    const isPasswordValid = await bcrypt.compare(password, user.Password);
-
     //const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
 
     try {
@@ -87,9 +85,11 @@ app.post('/api/login', async (req, res, next) => {
             return res.status(400).json({ message: 'Invalid Username or Password' });
         }
         const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
+        if ( results.length > 0){
         id = results[0]._id;
         fn = results[0].FirstName;
         ln = results[0].LastName;
+        }
         var ret = { id: id, firstName: fn, lastName: ln, error: '' };
         res.status(200).json(ret);
 
