@@ -49,10 +49,8 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
-            id = decoded.id;
-            let res = db.collection('Users').findOne({_id: id}).toArray();
-            newId = res[0]._id;
-            db.collection('Users').updateOne({_id: newId}, {$set:{isVerified: true}});
+            decId = decoded.id;
+            db.collections('Users').findOneAndUpdate({_id: decId},{$set: { isVerified: true}});
         }
     });
 });
