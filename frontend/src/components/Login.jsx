@@ -16,7 +16,7 @@ function Login() {
         
         try
         {
-            const response = await fetch('http://localhost:5173/api/login',{method:'POST',body:js,headers:{'Content-Type':'application/json'}});
+            const response = await fetch(buildPath('api/login'),{method:'POST',body:js,headers:{'Content-Type':'application/json'}});
         
             var res = JSON.parse(await response.text());
             console.log(res.id);
@@ -42,6 +42,19 @@ function Login() {
             return;
         }
     };
+
+    const app_name = 'taskmanager-poosd-b45429dde588'
+    function buildPath(route)
+    {
+    if (process.env.NODE_ENV === 'production')
+    {
+    return 'https://' + app_name + '.herokuapp.com/' + route;
+    }
+    else
+    {
+    return 'http://localhost:5000/' + route;
+    }
+    }
 
 
     return (
