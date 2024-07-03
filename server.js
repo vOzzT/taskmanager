@@ -8,7 +8,7 @@ const client = new MongoClient(url);
 client.connect();
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-
+const ObjectId = require('mongodb').ObjectId;
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -49,7 +49,7 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
-            decId = decoded.id;
+            decId = new ObjectId(decoded.id);
             console.log(decId);
             let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
             ret.then(function(ret) {
