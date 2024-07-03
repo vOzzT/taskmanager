@@ -15,9 +15,6 @@ function SignUp() {
     const userRef = useRef();
     const errRef = useRef();
 
-    var firstName;
-    var lastName;
-
     const [firstName, setFirst] = useState('');
 
     const [lastName, setLast] = useState('');
