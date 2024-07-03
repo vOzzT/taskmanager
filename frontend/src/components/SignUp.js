@@ -15,8 +15,8 @@ function SignUp() {
     const userRef = useRef();
     const errRef = useRef();
 
-    var firstName;
-    var lastName;
+    var firstname;
+    var lastname;
 
     const [user, setUser] = useState('');
     const [validName, setValidName] = useState(false);
@@ -85,7 +85,7 @@ function SignUp() {
             return;
         }
 
-        var obj = { login: user, password: pwd, firstname: firstName, lastname: lastName,  phone: phone, email: email};
+        var obj = { login: user, password: pwd, : , lastname: lastname,  phone: phone, email: email};
         var js = JSON.stringify(obj);
         
         try {
@@ -160,10 +160,10 @@ function SignUp() {
                         <form onSubmit={handleSubmit}>
                             <hr/>
                                 <label className='buttonHeader' >First Name:</label>
-                                <input type = "text" id = "firstName"></input>
+                                <input type = "text" id = "firstname"></input>
                             <hr/>
                                 <label className='buttonHeader' >Last Name:</label>
-                                <input type = "text" id = "lastName"></input>
+                                <input type = "text" id = "lastname"></input>
                             <hr/>
 
 
