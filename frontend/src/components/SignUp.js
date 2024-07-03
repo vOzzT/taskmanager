@@ -159,10 +159,10 @@ function SignUp() {
 
                         <form onSubmit={handleSubmit}>
                             <hr/>
-                                <label className='buttonHeader' >First Name:</label>
+                                <label className='buttonHeader' htmlFor="firstName" >First Name:</label>
                                 <input type = "text" id = "firstName"></input>
                             <hr/>
-                                <label className='buttonHeader' >Last Name:</label>
+                                <label className='buttonHeader' htmlFor="lastName" >Last Name:</label>
                                 <input type = "text" id = "lastName"></input>
                             <hr/>
 
