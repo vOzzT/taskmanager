@@ -68,21 +68,35 @@ app.post('/api/login', async (req, res, next) => {
 
     const db = client.db('COP4331');
 
-    const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
+    const isPasswordValid = await bcrypt.compare(Password, user.Password);
 
-    var id = -1;
-    var fn = '';
-    var ln = '';
-    
-    if (results.length > 0) {
+    //const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
+
+    try {
+
+        // Find the user by Username
+        const user = await db.collection('Users').findOne({ Login: login});
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid Username or Password' });
+        }
+
+        // Compare the Password
+        const isPasswordValid = await bcrypt.compare(password, user.Password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid Username or Password' });
+        }
+        const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
         id = results[0]._id;
         fn = results[0].FirstName;
         ln = results[0].LastName;
+        var ret = { id: id, firstName: fn, lastName: ln, error: '' };
+        res.status(200).json(ret);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-    var ret = { id: id, firstName: fn, lastName: ln, error: '' };
-    res.status(200).json(ret);
-
-
+    
 });
 
 app.post('/api/signup', async (req, res, next) => {
@@ -93,7 +107,9 @@ app.post('/api/signup', async (req, res, next) => {
     
     const { login, password, firstname, lastname, phone, email } = req.body;
 
-    let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false}; 
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    let newUser = { Login: login, Password: hashedPassword, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false}; 
 
     const db = client.db('COP4331');
  
