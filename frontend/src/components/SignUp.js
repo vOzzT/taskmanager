@@ -63,7 +63,18 @@ function SignUp() {
     }, [phone])
 
     useEffect(() => {
-        const result = EMAIL_REGEX.test(email);
+        const result = firstname;
+        console.log(result);
+        console.log(firstname);
+    }, [firstname])
+
+    useEffect(() => {
+        const result = lastname;
+        console.log(result);
+        console.log(lastname);
+    }, [lastname])
+
+    useEffect(() => {
         console.log(result);
         console.log(email);
         setValidEmail(result);
