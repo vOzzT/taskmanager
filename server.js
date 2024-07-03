@@ -51,7 +51,7 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verified successfully\n CLOSE!");
             decId = decoded.id;
             console.log(decId);
-            console.log(db.collections('Users').updateOne({_id: decId},{$set: { isVerified: true}}));
+            console.log(db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}}));
         }
     });
     
