@@ -87,13 +87,7 @@ app.post('/api/login', async (req, res, next) => {
             return res.status(400).json({ message: 'Invalid Username or Password' });
         }
 
-        const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
-        if ( results.length > 0){
-        let id = results[0]._id;
-        let fn = results[0].FirstName;
-        let ln = results[0].LastName;
-        }
-        var ret = { id: id, firstName: fn, lastName: ln, error: '' };
+        var ret = { id: user._id, firstName: user.FirstNamefn, lastName: user.LastName, error: '' };
         res.status(200).json(ret);
 
     } catch (error) {
