@@ -137,12 +137,11 @@ app.post('/api/signup', async (req, res, next) => {
             if (err) throw err;
         });
         console.log("User " + login + " added!");
-        const results = await db.collection('Users').find({Login: req.body.login}).toArray();
-        const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
-        var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
-        console.log(insertedData[0]._id);
+        const user = await db.collection('Users').findOne({ Login: login});
+        var ret = { id: user._id, firstName: firstname, lastName: lastname, error: '' };
+        
         let mail = {
-            "id": insertedData[0]._id,
+            "id": user._id,
             "data": 'Token Data'
         }
         
