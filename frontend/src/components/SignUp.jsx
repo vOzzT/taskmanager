@@ -122,8 +122,13 @@ function SignUp() {
                     <div className="black_sideline">
                     </div>
 
-                    <div className='card'>
-                        <h1 className='card-title'>SUCCESS</h1>
+
+                    <div className = "card">
+                        <h1 className = "card-title">Email Verification</h1>
+                        <h2>Please check your email to verify your account</h2>
+                        <hr/>
+                        <Link to ="/login"><button className="homeButton">LOGIN</button></Link>
+                        <hr/>
                     </div>
                 </div>
             ) : (
