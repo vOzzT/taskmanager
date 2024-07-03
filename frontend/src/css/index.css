@@ -5,7 +5,7 @@ body{
 
 /*App is mainly for the background image*/
 .Composition {
-  background-image: url(./assets/notebook.png);
+  background-image: url("./assets/notebook.png");
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -21,7 +21,7 @@ body{
 
 /* The side navigation menu */
 .black_sideline {
-  background-image: url(./assets/black_side.jpg);
+  background-image: url("./assets/black_side.jpg");
   height: 100%; /* 100% Full-height */
   width: 130px; /* 0 width - change this with JavaScript */
   position: fixed; /* Stay in place */
@@ -35,7 +35,7 @@ body{
 
 /*Calendar is mainly for the background image*/
 .Calendar {
-  background-image: url(./assets/line_paper.jpg);
+  background-image: url("./assets/line_paper.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
