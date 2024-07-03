@@ -85,7 +85,7 @@ function SignUp() {
             return;
         }
 
-        var obj = { login: user, password: pwd, : , lastname: lastname,  phone: phone, email: email};
+        var obj = { login: user, password: pwd, firstname: firstname , lastname: lastname,  phone: phone, email: email};
         var js = JSON.stringify(obj);
         
         try {
