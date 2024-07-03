@@ -19,8 +19,8 @@ app.use(bodyParser.json());
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'poosdtaskmanagerapi@gmail.com',
-        pass: 'lpqbilhjzxgxsqvs'
+        user: process.env.EMAIL,
+        pass: process.env.PASS
     }
 });
   
@@ -50,10 +50,9 @@ app.get('/verify/:token', (req, res)=>{
         else {
             res.send("Email verified successfully\n CLOSE!");
             decId = new ObjectId(decoded.id);
-            console.log(decId);
             let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
             ret.then(function(ret) {
-                console.log(ret);
+                //console.log(ret);
              }).catch((err) => {console.log('Error: ' + err);})
         }
     });
