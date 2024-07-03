@@ -50,7 +50,8 @@ app.get('/verify/:token', (req, res)=>{
         else {
             res.send("Email verified successfully\n CLOSE!");
             decId = decoded.id;
-            db.collections('Users').findOneAndUpdate({_id: decId},{$set: { isVerified: true}});
+            console.log(insertedData[0]._id);
+            console.log(db.collections('Users').findOneAndUpdate({_id: decId},{$set: { isVerified: true}}));
         }
     });
     
@@ -121,7 +122,7 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
-
+        console.log(insertedData[0]._id);
         let mail = {
             "id": insertedData[0]._id,
             "data": 'Token Data'
