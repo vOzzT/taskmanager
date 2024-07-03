@@ -53,6 +53,7 @@ app.get('/verify/:token', (req, res)=>{
             db.collections('Users').findOneAndUpdate({_id: decId},{$set: { isVerified: true}});
         }
     });
+    db.close();
 });
 
 app.post('/api/login', async (req, res, next) => {
@@ -77,6 +78,8 @@ app.post('/api/login', async (req, res, next) => {
     }
     var ret = { id: id, firstName: fn, lastName: ln, error: '' };
     res.status(200).json(ret);
+
+    db.close();
 });
 
 app.post('/api/signup', async (req, res, next) => {
@@ -149,6 +152,7 @@ app.post('/api/signup', async (req, res, next) => {
         res.status(200).json(ret);
     }
 
+    db.close();
 });
 
 app.post('/api/addEvent', async (req, res, next) => {
@@ -173,6 +177,7 @@ app.post('/api/addEvent', async (req, res, next) => {
     var ret = { id: insertedData[0]._id, name: name, description: description, error: '' };
     res.status(200).json(ret);
 
+    db.close();
 });
 
 app.post('/api/searchEvent', async (req, res, next) => {
@@ -200,6 +205,8 @@ app.post('/api/searchEvent', async (req, res, next) => {
     } catch (err) {
         res.status(500).json({ events: [], error: err.toString() });
     }
+
+    db.close();
 });
 
 app.post('/api/updateEvent', async (req, res, next) => {
@@ -239,6 +246,8 @@ app.post('/api/updateEvent', async (req, res, next) => {
     } catch (err) {
         res.status(500).json({ error: err.toString() });
     }
+
+    db.close();
 });
 
 app.post('/api/deleteEvent', async (req, res, next) => {
@@ -265,6 +274,8 @@ app.post('/api/deleteEvent', async (req, res, next) => {
         console.error('Error deleting event:', err);
         res.status(500).json({ error: err.toString() });
     }
+
+    db.close();
 });
 
 
@@ -290,6 +301,7 @@ app.post('/api/addTag', async (req, res, next) => {
     var ret = { id: insertedData[0]._id, name: name, userId: userId, error: '' };
     res.status(200).json(ret);
 
+    db.close();
 });
 
 if(process.env.NODE_ENV === 'production')
