@@ -71,7 +71,7 @@ function SignUp() {
 
     useEffect(() => {
         setErrMsg('');
-    }, [user, pwd, phone, email])
+    }, [user, pwd, firstname, lastname, phone, email])
 
     
 
