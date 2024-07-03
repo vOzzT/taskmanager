@@ -15,8 +15,8 @@ function SignUp() {
     const userRef = useRef();
     const errRef = useRef();
 
-    var firstname;
-    var lastname;
+    var firstName;
+    var lastName;
 
     const [user, setUser] = useState('');
     const [validName, setValidName] = useState(false);
@@ -63,18 +63,6 @@ function SignUp() {
     }, [phone])
 
     useEffect(() => {
-        const result = firstname;
-        console.log(result);
-        console.log(firstname);
-    }, [firstname])
-
-    useEffect(() => {
-        const result = lastname;
-        console.log(result);
-        console.log(lastname);
-    }, [lastname])
-
-    useEffect(() => {
         const result = EMAIL_REGEX.test(email);
         console.log(result);
         console.log(email);
@@ -83,7 +71,7 @@ function SignUp() {
 
     useEffect(() => {
         setErrMsg('');
-    }, [user, pwd, firstname, lastname, phone, email])
+    }, [user, pwd, phone, email])
 
     
 
@@ -97,7 +85,7 @@ function SignUp() {
             return;
         }
 
-        var obj = { login: user, password: pwd, firstname: firstname , lastname: lastname,  phone: phone, email: email};
+        var obj = { login: user, password: pwd, firstname: firstName, lastname: lastName,  phone: phone, email: email};
         var js = JSON.stringify(obj);
         
         try {
@@ -171,11 +159,11 @@ function SignUp() {
 
                         <form onSubmit={handleSubmit}>
                             <hr/>
-                                <label className='buttonHeader' >First Name:</label>
-                                <input type = "text" id = "firstname"></input>
+                                <label className='buttonHeader' htmlFor="firstName" >First Name:</label>
+                                <input type = "text" id = "firstName"></input>
                             <hr/>
-                                <label className='buttonHeader' >Last Name:</label>
-                                <input type = "text" id = "lastname"></input>
+                                <label className='buttonHeader' htmlFor="lastName" >Last Name:</label>
+                                <input type = "text" id = "lastName"></input>
                             <hr/>
 
 
