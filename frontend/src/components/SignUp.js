@@ -174,8 +174,7 @@ function SignUp() {
 
                         <form onSubmit={handleSubmit}>
                             <hr/>
-                                <label className='buttonHeader' htmlFor="firstName" >First Name:</label>
-                                <! --<input type = "text" id = "firstName" value = {firstName}></input>-->
+                            <label className='buttonHeader' htmlFor="firstName" >First Name:</label>
                             <input type="text"
                                 id="firstName"
                                 autoComplete="off"
@@ -184,8 +183,7 @@ function SignUp() {
                                 required
                             />
                             <hr/>
-                                <label className='buttonHeader' htmlFor="lastName" >Last Name:</label>
-                                <! -- <input type = "text" id = "lastName" value = {lastName}></input>-->
+                            <label className='buttonHeader' htmlFor="lastName" >Last Name:</label>
                             <input type="text"
                                 id="lastName"
                                 autoComplete="off"
