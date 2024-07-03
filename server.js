@@ -8,13 +8,22 @@ const client = new MongoClient(url);
 client.connect();
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-
+const ObjectId = require('mongodb').ObjectId;
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const app = express();
 app.set('port', (process.env.PORT || 5000));
 app.use(cors());
 app.use(bodyParser.json());
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'poosdtaskmanagerapi@gmail.com',
+        pass: 'lpqbilhjzxgxsqvs'
+    }
+});
+  
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -31,6 +40,7 @@ app.use((req, res, next) => {
 
 app.get('/verify/:token', (req, res)=>{
     const {token} = req.params;
+    const db = client.db('COP4331');
   
     // Verifying the JWT token 
     jwt.verify(token, 'ourSecretKey', function(err, decoded) {
@@ -39,8 +49,15 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
+            decId = new ObjectId(decoded.id);
+            console.log(decId);
+            let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
+            ret.then(function(ret) {
+                console.log(ret);
+             }).catch((err) => {console.log('Error: ' + err);})
         }
     });
+    
 });
 
 app.post('/api/login', async (req, res, next) => {
@@ -65,6 +82,8 @@ app.post('/api/login', async (req, res, next) => {
     }
     var ret = { id: id, firstName: fn, lastName: ln, error: '' };
     res.status(200).json(ret);
+
+
 });
 
 app.post('/api/signup', async (req, res, next) => {
@@ -75,42 +94,7 @@ app.post('/api/signup', async (req, res, next) => {
     
     const { login, password, firstname, lastname, phone, email } = req.body;
 
-    let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email };
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'poosdtaskmanagerapi@gmail.com',
-            pass: 'omasndeiaraxooyd'
-        }
-    });
-    
-    const token = jwt.sign({data: 'Token Data'  }, 'ourSecretKey', { expiresIn: '10m' }  
-    );    
-    
-    const mailConfigurations = {
-    
-        // It should be a string of sender/server email
-        from: 'poosdtaskmanagerapi@gmail.com',
-    
-        to: email,
-    
-        // Subject of Email
-        subject: 'Email Verification',
-        
-        // This would be the text of email body
-        text: `Hi! There, You have recently visited 
-               our website and entered your email.
-               Please follow the given link to verify your email
-               https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} 
-               Thanks`
-    };
-    
-    transporter.sendMail(mailConfigurations, function(error, info){
-        if (error) throw Error(error);
-        console.log('Email Sent Successfully');
-        console.log(info);
-    });
+    let newUser = { Login: login, Password: password, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false}; 
 
     const db = client.db('COP4331');
  
@@ -141,6 +125,34 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         var ret = { id: insertedData[0]._id, firstName: firstname, lastName: lastname, error: '' };
+        console.log(insertedData[0]._id);
+        let mail = {
+            "id": insertedData[0]._id,
+            "data": 'Token Data'
+        }
+        
+        const token = jwt.sign(mail, 'ourSecretKey', { expiresIn: '10m' }); 
+
+        const verificationEmail = {
+    
+            // It should be a string of sender/server email
+            from: 'poosdtaskmanagerapi@gmail.com',
+        
+            to: email,
+        
+            // Subject of Email
+            subject: 'Email Verification For Taskmanager App',
+            
+            // This would be the text of email body
+            text: `Press this link to verify your email: https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} Thanks`
+        };
+        
+        transporter.sendMail(verificationEmail, function(error, info){
+            if (error) throw Error(error);
+            console.log('Email Sent Successfully');
+            console.log(info);
+        });
+
         res.status(200).json(ret);
     }
 
@@ -195,6 +207,7 @@ app.post('/api/searchEvent', async (req, res, next) => {
     } catch (err) {
         res.status(500).json({ events: [], error: err.toString() });
     }
+
 });
 
 app.post('/api/updateEvent', async (req, res, next) => {
@@ -234,6 +247,7 @@ app.post('/api/updateEvent', async (req, res, next) => {
     } catch (err) {
         res.status(500).json({ error: err.toString() });
     }
+
 });
 
 app.post('/api/deleteEvent', async (req, res, next) => {
@@ -260,6 +274,7 @@ app.post('/api/deleteEvent', async (req, res, next) => {
         console.error('Error deleting event:', err);
         res.status(500).json({ error: err.toString() });
     }
+
 });
 
 
