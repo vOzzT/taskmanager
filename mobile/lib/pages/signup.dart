@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobile/components/my_textfield.dart';
-
+import 'package:poosd/components/my_textfield.dart';
+import 'package:poosd/services/auth_services.dart';
+//C:\Users\14077\flutterApps\poosd\lib\pages\signup.dart
+//lib\pages\signup.dart
 final _formKey = GlobalKey<FormState>();
 
 class SignUpFormScreen extends StatefulWidget {
@@ -89,12 +91,25 @@ class SignUpPage extends State<SignUpFormScreen> {
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
 
+  final AuthService authService = AuthService();
+
+  
   bool passToggle = true;
 
   // sign user in method
   void login() {}
 
-  void signUp() {}
+  void signUp() {
+    authService.signUpUser(
+      context: context, 
+      login: usernameController.text, 
+      password: passwordController.text,
+      firstname: firstController.text, 
+      lastname: lastController.text, 
+      email: emailController.text, 
+      phone: phoneController.text
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +177,7 @@ class SignUpPage extends State<SignUpFormScreen> {
                   GestureDetector(
                     onTap: () {
                       _formKey.currentState!.validate();
+                      signUp();
                     },
                     child: Container(
                       height: 50,
