@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobile/components/my_textfield.dart';
+import 'package:poosd/components/my_textfield.dart';
+import 'package:poosd/services/auth_services.dart';
 
 
 final _formKey = GlobalKey<FormState>();
@@ -14,15 +15,18 @@ class LoginFormScreen extends StatefulWidget {
 
 class LoginPage extends State<LoginFormScreen> {
 
+  final AuthService authService = AuthService();
+  
   // text editing controllers
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
   bool passToggle = true;
   // sign user in method
-  void login() {}
+  void login() {
+    authService.signInUser(context: context, login: usernameController.text, password: passwordController.text);
+  }
 
-  void signUp() {}
 
 
   String? validateUser(String? user) {
@@ -106,6 +110,7 @@ class LoginPage extends State<LoginFormScreen> {
                   GestureDetector(
                     onTap: () {
                       _formKey.currentState!.validate();
+                      login();
                     },
                     child: Container(
                       height: 50,
