@@ -1,161 +1,405 @@
-import { Link } from 'react-router-dom'
-import { useState } from "react";
-import {
-  format,
-  subMonths,
-  addMonths,
-  startOfWeek,
-  addDays,
-  isSameDay,
-  lastDayOfWeek,
-  getWeek,
-  addWeeks,
-  subWeeks
-} from "date-fns";
+import React, { useState } from 'react';
+import { SketchPicker } from "react-color";
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import './Toolbar';
+import RBCToolbar from './Toolbar';
 
-import '../css/calendar.css'
+const localizer = momentLocalizer(moment);
 
-// Run this command below to install "date-fns"
-// npm install date-fns --save
+function Calen() {
 
-const Calendar = ({ showDetailsHandle }) => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [currentWeek, setCurrentWeek] = useState(getWeek(currentMonth));
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [loggedInUser, setLoggedInUser] = useState({
+    name: 'John Doe', // Replace with actual user's name
+  });
 
-  const changeMonthHandle = (btnType) => {
-    if (btnType === "prev") {
-      setCurrentMonth(subMonths(currentMonth, 1));
-    }
-    if (btnType === "next") {
-      setCurrentMonth(addMonths(currentMonth, 1));
-    }
+  const [events, setEvents] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [eventTitle, setEventTitle] = useState('');
+  const [selectEvent, setSelectEvent] = useState(null);
+  const [searchOption, setSearchOption] = useState('day');
+
+  const [searchTitle, setSearchTitle] = useState('');
+  const [searchByTitle, setSearchByTitle] = useState('');
+  const [searchByDate, setSearchByDate] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+
+  const [color, setColor] = useState('#ff0000');
+  const [showUserGuide, setShowUserGuide] = useState(false);
+  const [showSearchEvents, setShowSearchEvents] = useState(false);
+
+  const handleSelectSlot = (slotInfo) => {
+    setShowModal(true);
+    setSelectedDate(slotInfo.start);
+    setSelectEvent(null);
+    setSelectedDay(slotInfo.start);
+    setSelectedWeek(slotInfo.start);
   };
 
-  const changeWeekHandle = (btnType) => {
-    //console.log("current week", currentWeek);
-    if (btnType === "prev") {
-      //console.log(subWeeks(currentMonth, 1));
-      setCurrentMonth(subWeeks(currentMonth, 1));
-      setCurrentWeek(getWeek(subWeeks(currentMonth, 1)));
-    }
-    if (btnType === "next") {
-      //console.log(addWeeks(currentMonth, 1));
-      setCurrentMonth(addWeeks(currentMonth, 1));
-      setCurrentWeek(getWeek(addWeeks(currentMonth, 1)));
-    }
+  const handleSelectedEvent = (event) => {
+    setShowModal(true);
+    setSelectEvent(event);
+    setEventTitle(event.title);
+    setSelectedDay(event.start);
+    setSelectedWeek(event.start);
   };
 
-  const onDateClickHandle = (day, dayStr) => {
-    setSelectedDate(day);
-    showDetailsHandle(dayStr);
-  };
-
-  const renderHeader = () => {
-    const dateFormat = "MMM yyyy";
-    // console.log("selected day", selectedDate);
-    return (
-      <div className="header row flex-middle">
-        <div className="col col-start">
-          {/* <div className="icon" onClick={() => changeMonthHandle("prev")}>
-            prev month
-          </div> */}
-        </div>
-        <div className="col col-center">
-          <span>{format(currentMonth, dateFormat)}</span>
-        </div>
-        <div className="col col-end">
-          {/* <div className="icon" onClick={() => changeMonthHandle("next")}>next month</div> */}
-        </div>
-      </div>
-    );
-  };
-  const renderDays = () => {
-    const dateFormat = "EEE";
-    const days = [];
-    let startDate = startOfWeek(currentMonth, { weekStartsOn: 1 });
-    for (let i = 0; i < 7; i++) {
-      days.push(
-        <div className="col col-center" key={i}>
-          {format(addDays(startDate, i), dateFormat)}
-        </div>
-      );
-    }
-    return <div className="days row">{days}</div>;
-  };
-  const renderCells = () => {
-    const startDate = startOfWeek(currentMonth, { weekStartsOn: 1 });
-    const endDate = lastDayOfWeek(currentMonth, { weekStartsOn: 1 });
-    const dateFormat = "d";
-    const rows = [];
-    let days = [];
-    let day = startDate;
-    let formattedDate = "";
-    while (day <= endDate) {
-      for (let i = 0; i < 7; i++) {
-        formattedDate = format(day, dateFormat);
-        const cloneDay = day;
-        days.push(
-          <div
-            className={`col cell ${
-              isSameDay(day, new Date())
-                ? "today"
-                : isSameDay(day, selectedDate)
-                ? "selected"
-                : ""
-            }`}
-            key={day}
-            onClick={() => {
-              const dayStr = format(cloneDay, "ccc dd MMM yy");
-              onDateClickHandle(cloneDay, dayStr);
-            }}
-          >
-            <span className="number">{formattedDate}</span>
-            <span className="bg">{formattedDate}</span>
-          </div>
+  const saveEvent = () => {
+    if (eventTitle && selectedDate) {
+      if (selectEvent) {
+        const updatedEvent = { ...selectEvent, title: eventTitle };
+        const updatedEvents = events.map((event) =>
+          event === selectEvent ? updatedEvent : event
         );
-        day = addDays(day, 1);
+        setEvents(updatedEvents);
+      } else {
+        const newEvent = {
+          title: eventTitle,
+          start: selectedDate,
+          end: moment(selectedDate).add(1, 'hours').toDate(),
+          backgroundColor: color,
+        };
+        setEvents([...events, newEvent]);
       }
 
-      rows.push(
-        <div className="row" key={day}>
-          {days}
-        </div>
-      );
-      days = [];
+      setShowModal(false);
+      setEventTitle('');
+      setSelectEvent(null);
+      setSelectedDay(selectedDate);
+      setSelectedWeek(selectedDate);
     }
-    return <div className="body">{rows}</div>;
   };
-  const renderFooter = () => {
-    return (
-      <div className="header row flex-middle">
-        <div className="col col-start">
-          <div className="icon" onClick={() => changeWeekHandle("prev")}>
-            prev week
+
+  const deleteEvent = () => {
+    if (selectEvent) {
+      const updatedEvents = events.filter((event) => event !== selectEvent);
+      setEvents(updatedEvents);
+      setShowModal(false);
+      setEventTitle('');
+      setSelectEvent(null);
+      setSelectedDay(selectEvent.start);
+      setSelectedWeek(selectEvent.start);
+    }
+  };
+
+  const filteredEventsForDay = events.filter((event) =>
+    moment(event.start).isSame(selectedDay, 'day')
+  );
+
+  const filteredEventsForWeek = events.filter((event) =>
+    moment(event.start).isSame(selectedWeek, 'week')
+  );
+
+  const filteredEventsforTitle = events.filter((event) =>
+    event.title.toLowerCase().includes(searchByTitle.toLowerCase())
+  );
+
+  const handleSearchOptionChange = (option) => {
+    setSearchOption(option);
+  };
+
+  const openUserGuide = () => {
+    setShowUserGuide(true);
+  };
+
+  const searchEvents = () => {
+    setShowSearchEvents(true);
+  };
+
+  const clearSearch = () => {
+    setSearchByTitle('');
+    setSearchByDate('');
+    setSearchResults([]);
+  };
+
+  const searchByTitleHandler = () => {
+    if (searchByTitle.trim() !== '') {
+      const filteredEvents = events.filter((event) =>
+        event.title.toLowerCase().includes(searchByTitle.toLowerCase())
+      );
+      setSearchResults(filteredEvents);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const searchByDateHandler = () => {
+    if (searchByDate !== '') {
+      const filteredEvents = events.filter((event) =>
+        moment(event.start).isSame(searchByDate, 'day')
+      );
+      setSearchResults(filteredEvents);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const formats = {
+    weekdayFormat: (date, culture, localizer) =>
+      localizer.format(date, 'dddd', culture),
+  };
+
+  const handleTodayClick = () => {
+    setSelectedDay(new Date()); // Set selected day to today
+    setSelectedWeek(new Date()); // Set selected week to today
+  };
+
+  const handleWeekClick = () => {
+    setSelectedWeek(moment().startOf('week').toDate()); // Set selected week to current week
+  };
+
+  return (
+
+    <>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"></link>
+    <div>
+      
+      {/* Header */}
+      <header style={{ backgroundColor: '#f0f0f0', padding: '10px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ textAlign: 'center' }}>Welcome, {loggedInUser.name}</h2>
+          <h3>POOSD Task Manager</h3>
+        </div>
+        <button className="btn btn-danger" onClick={() => window.location.href = "/"}>Logout</button>
+      </header>
+
+      {/* Calendar and Side Navigation */}
+      <div style={{ display: 'flex' }}>
+
+        {/* Calendar */}
+        <div style={{ flex: 2, height: '575px' }}>
+
+          {/* Grey Box with Buttons (Search and Add/Edit) */}
+          <div style={{ backgroundColor: '#f0f0f0', padding: '10px', marginBottom: '20px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              
+              <button className="btn btn-success" style={{ marginRight: '10px' }} onClick={searchEvents}>Search</button>
+              <button className="btn btn-primary" onClick={openUserGuide}>User Guide</button>
+            </div>
+          </div>
+
+          <Calendar
+            localizer={localizer}
+            views={[Views.DAY, Views.WEEK, Views.MONTH]}
+            startAccessor="start"
+            events={events}
+            formats={formats}
+            endAccessor="end"
+            style={{ margin: '50px' }}
+            selectable={true}
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectedEvent}
+            components={{
+              toolbar: RBCToolbar
+            }}
+          />
+
+          {/* Grey Box with User Guide Button */}
+          <div style={{ backgroundColor: '#f0f0f0', padding: '10px', textAlign: 'center', border: '2px solid black', marginBottom: '20px' }}>
+            <button className="btn btn-success">User Guide</button>
+          </div>
+
+        </div>
+
+        {/* Side Navigation */}
+        <div className='sideNav' style={{ flex: 1, border: '2px solid black', padding: '10px', height: '800px', marginLeft: '20px' }}>
+
+          <div style={{ backgroundColor: 'white', height: '770px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <h2 style={{ textAlign: 'center' }}>Current Tasks</h2>
+              <hr />
+
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <button className="btn btn-secondary mb-2" onClick={handleTodayClick}>Day</button>
+                <button className="btn btn-secondary mb-2 ms-2" onClick={handleWeekClick}>Week</button>
+              </div>
+
+              <hr />
+
+              {selectedDay && (
+                <div>
+                  <h3>Events for Selected Day</h3>
+                  <p>Date: {moment(selectedDay).format('MMMM Do YYYY')}</p>
+                  <ul>
+                    {filteredEventsForDay.map((event, index) => (
+                      <li key={index}>{moment(event.start).format('LT')} - {event.title}</li>
+                    ))}
+                  </ul>
+                  {filteredEventsForDay.length === 0 && <p>No events for this day.</p>}
+                </div>
+              )}
+              {selectedWeek && (
+                <div>
+                  <h3>Events for Selected Week</h3>
+                  <p>Week: {moment(selectedWeek).startOf('week').format('MMMM Do YYYY')} - {moment(selectedWeek).endOf('week').format('MMMM Do YYYY')}</p>
+                  <ul>
+                    {filteredEventsForWeek.map((event, index) => (
+                      <li key={index}>{moment(event.start).format('dddd, LT')} - {event.title}</li>
+                    ))}
+                  </ul>
+                  {filteredEventsForWeek.length === 0 && <p>No events for this week.</p>}
+                </div>
+              )}
+              {!selectedDay && !selectedWeek && (
+                <p style={{ textAlign: 'center', margin: '10px' }}>Select a day or week on the calendar to view events.</p>
+              )}
+
+              <hr />
+            </div>
+
+            {/* Footer with Clear Button
+            <div style={{ textAlign: 'center' }}>
+              <button className="btn btn-danger" style={{ width: '100%' }} onClick={() => window.location.href = "/"}>Clear</button>
+            </div> */}
           </div>
         </div>
-        <div>{currentWeek}</div>
-        <div className="col col-end" onClick={() => changeWeekHandle("next")}>
-          <div className="icon">next week</div>
-        </div>
-      </div>
-    );
-  };
-  return (
-    <div className="calendar">
-      {renderHeader()}
-      {renderDays()}
-      {renderCells()}
-      {renderFooter()}
-    </div>
-  );
-};
 
-export default Calendar;
-/**
- * Header:
- * icon for switching to the previous month,
- * formatted date showing current month and year,
- * another icon for switching to next month
- * icons should also handle onClick events to change a month
- */
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)', position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}>
+          <div className="modal-dialog" style={{ maxWidth: '600px', margin: '100px auto' }}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">{selectEvent ? 'Edit Event' : 'Add Event'}</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)} />
+              </div>
+              <div className="modal-body">
+                <label>Event Title:</label>
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  value={eventTitle}
+                  onChange={(e) => setEventTitle(e.target.value)}
+                />
+                <SketchPicker
+                  color={color}
+                  onChangeComplete={(color) => setColor(color.hex)}
+                />
+              </div>
+              <div className="modal-footer">
+                {selectEvent && (
+                  <button
+                    type="button"
+                    className="btn btn-danger me-2"
+                    onClick={deleteEvent}
+                  >
+                    Delete Event
+                  </button>
+                )}
+                <button type="button" className='btn btn-primary' onClick={saveEvent}>Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User Guide Modal */}
+      {showUserGuide && (
+        <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)', position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}>
+          <div className="modal-dialog" style={{ maxWidth: '800px', margin: '100px auto' }}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">User Guide</h5>
+                <button type="button" className="btn-close" onClick={() => setShowUserGuide(false)} />
+              </div>
+              <div className="modal-body">
+                {/* User Guide content */}
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowUserGuide(false)}>Back</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Search Modal */}
+      {showSearchEvents && (
+        <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)', position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}>
+          <div className="modal-dialog" style={{ maxWidth: '800px', margin: '100px auto' }}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title text-center">Search Event</h5>
+                <button type="button" className="btn-close" onClick={() => setShowSearchEvents(false)} />
+              </div>
+              <div className="modal-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <div className="input-group">
+                    <input
+                      type="search"
+                      className="form-control rounded"
+                      placeholder="Search by Title"
+                      value={searchByTitle}
+                      onChange={(e) => setSearchByTitle(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary"
+                      onClick={searchByTitleHandler}
+                    >
+                      Search
+                    </button>
+                  </div>
+                  <div className="input-group">
+                    <input
+                      type="date"
+                      className="form-control rounded"
+                      value={searchByDate}
+                      onChange={(e) => setSearchByDate(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary"
+                      onClick={searchByDateHandler}
+                    >
+                      Search
+                    </button>
+                  </div>
+
+                  <button className="btn btn-danger" style={{ marginRight: '10px' }} onClick={clearSearch}>Clear</button>
+                </div>
+
+                {/* Display search results */}
+                <div>
+                  {searchResults.length > 0 ? (
+                    <div>
+                      <h3>Search Results</h3>
+                      <ul className="list-group">
+                        {searchResults.map((event, index) => (
+                          <li key={index} className="list-group-item">
+                            <p>{moment(event.start).format('MMMM Do YYYY, LT')} - {event.title}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p>No results found.</p>
+                  )}
+                </div>
+
+                {/* Back Button */}
+                <div style={{ textAlign: 'right' }}>
+                  <button className="btn btn-secondary" onClick={() => setShowSearchEvents(false)}>Back</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+
+    </>
+  );
+}
+
+export default Calen;
