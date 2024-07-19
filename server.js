@@ -56,7 +56,7 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
-            decId = new ObjectId(decoded.id);
+            let decId = new ObjectId(decoded.id);
             let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
             ret.then(function(ret) {
                 console.log(ret);
@@ -99,7 +99,7 @@ app.post('/api/forgot-password', async (req, res) => {
     
     text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
              Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n
-             https://taskmanager-poosd-b45429dde588.herokuapp.com/reset-password/${token}\n\n
+             https://taskmanager-poosd-b45429dde588.herokuapp.com/api/reset-password/${token}\n\n
              If you did not request this, please ignore this email and your password will remain unchanged.\n`,
     };
 
@@ -127,7 +127,7 @@ app.post('/api/reset-password/:token', async (req, res) => {
       }
       const hashedPassword = await bcrypt.hash(password, 10);
         decId = new ObjectId(decoded.id);
-      let ret = db.collection('Users').updateOne({_id: decId},{$set: { password: hashedPassword, resetPasswordToken: undefined, resetPasswordExpires: undefined}});
+      let ret = db.collection('Users').updateOne({_id: decId},{$set: { Password: hashedPassword, resetPasswordToken: undefined, resetPasswordExpires: undefined}});
             ret.then(function(ret) {
                 console.log(ret);
              }).catch((err) => {console.log('Error: ' + err);})
