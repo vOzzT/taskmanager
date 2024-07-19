@@ -225,7 +225,7 @@ app.post('/api/signup', async (req, res, next) => {
         console.log("User " + login + " added!");
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
-        const user = db.collection('Users').findOne({ Login: login});
+        const user = await db.collection('Users').findOne({ Login: login});
         console.log(user._id);
         //var ret = { id: user._id, firstName: firstname, lastName: lastname, error: '' };
         //console.log(user._id);
