@@ -50,7 +50,7 @@ app.get('/verify/:token', (req, res)=>{
     const db = client.db('COP4331');
   
     // Verifying the JWT token 
-    jwt.verify(token, 'ourSecretKey', function(err, decoded) {
+    jwt.verify(token, process.env.JWT_TOKEN, function(err, decoded) {
         if (err) {
             console.log(err);
             res.send("Email verification failed, possibly the link is invalid or expired");}
@@ -64,6 +64,84 @@ app.get('/verify/:token', (req, res)=>{
         }
     });
     
+});
+
+app.post('/forgot-password', async (req, res) => {
+    const db = client.db('COP4331');
+
+    const { email } = req.body;
+  
+    const user = await db.collection('Users').findOne({ email });
+
+    if (!user) {
+      return res.status(400).send('User with this email does not exist.');
+    }
+  
+    const token = jwt.sign({ id: user._id }, process.env.JWT_TOKEN, { expiresIn: '1h' });
+    //decId = new ObjectId(decoded.id);
+    let ret = db.collection('Users').updateOne({Email: email},{$set: { password: hashedPassword, resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000}});
+            ret.then(function(ret) {
+                //console.log(ret);
+             }).catch((err) => {console.log('Error: ' + err);})
+  
+    //user.resetPasswordToken = token;
+    //user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  
+    //await user.save();
+  
+    const resetEmail = {
+      to: email,
+      from: process.env.EMAIL,
+      subject: 'Password Reset',
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+             Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n
+             https://taskmanager-poosd-b45429dde588.herokuapp.com/reset-password/${token}\n\n
+             If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    };
+
+    transporter.sendMail(resetEmail, function(error, info){
+        if (error) throw Error(error);
+        res.status(200).send('Email Sent Successfully');
+        //console.log(info);
+    });
+
+    res.status(200).json({token});
+});
+
+app.post('/reset-password/:token', async (req, res) => {
+    const db = client.db('COP4331');
+    const  { password } = req.body;
+
+    try {
+      const decoded = jwt.verify(req.params.token, process.env.JWT_TOKEN);
+
+      const user = await db.collection('Users').findOne({
+        _id: decoded.id,
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+  
+      if (!user) {
+        return res.status(400).send('Password reset token is invalid or has expired.');
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+        decId = new ObjectId(decoded.id);
+      let ret = db.collection('Users').updateOne({_id: decId},{$set: { password: hashedPassword, resetPasswordToken: undefined, resetPasswordExpires: undefined}});
+            ret.then(function(ret) {
+                //console.log(ret);
+             }).catch((err) => {console.log('Error: ' + err);})
+      
+  
+      //user.password = hashedPassword;
+      //user.resetPasswordToken = undefined;
+      //user.resetPasswordExpires = undefined;
+  
+      //await user.save();
+  
+      res.status(200).send('Password has been reset.');
+    } catch (err) {
+      res.status(400).send('Password reset token is invalid or has expired.');
+    }
 });
 
 app.post('/api/login', async (req, res, next) => {
@@ -89,6 +167,13 @@ app.post('/api/login', async (req, res, next) => {
             return res.status(400).json({ message: 'Invalid Username or Password' });
         }
 
+        // Is the user verified
+        const isUserVerified = user.isVerified;
+        if(!isUserVerified){
+            return res.status(400).json({ message: 'User not Verified' });
+        }
+
+
         var ret = { id: user._id, firstName: user.FirstName, lastName: user.LastName, error: '' };
         res.status(200).json(ret);
 
@@ -109,7 +194,7 @@ app.post('/api/signup', async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let newUser = { Login: login, Password: hashedPassword, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false}; 
+    let newUser = { Login: login, Password: hashedPassword, FirstName: firstname, LastName: lastname, Phone: phone, Email: email , isVerified: false, resetPasswordToken: undefined, resetPasswordExpires: undefined}; 
 
     const db = client.db('COP4331');
  
@@ -141,15 +226,14 @@ app.post('/api/signup', async (req, res, next) => {
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         const user = db.collection('Users').findOne({ Login: login});
         //console.log(user._id);
-        var ret = { id: user._id, firstName: firstname, lastName: lastname, error: '' };
+        //var ret = { id: user._id, firstName: firstname, lastName: lastname, error: '' };
         //console.log(user._id);
         
         let mail = {
             "id": user._id,
-            "data": 'Token Data'
         }
         
-        const token = jwt.sign(mail, 'ourSecretKey', { expiresIn: '10m' }); 
+        const token = jwt.sign(mail, process.env.JWT_TOKEN, { expiresIn: '30m' }); 
 
         const verificationEmail = {
     
@@ -171,7 +255,7 @@ app.post('/api/signup', async (req, res, next) => {
             console.log(info);
         });
 
-        res.status(200).json(ret);
+        res.status(200).json({token});
     }
 
 });
