@@ -77,9 +77,9 @@ app.post('/forgot-password', async (req, res) => {
       return res.status(400).send('User with this email does not exist.');
     }
   
-    const token = jwt.sign({ id: user._id }, process.env.JWT_TOKEN, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, 'ourSecretKey', { expiresIn: '1h' });
     //decId = new ObjectId(decoded.id);
-    let ret = db.collection('Users').updateOne({Email: email},{$set: { password: hashedPassword, resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000}});
+    let ret = db.collection('Users').updateOne({Email: email},{$set: { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000}});
             ret.then(function(ret) {
                 //console.log(ret);
              }).catch((err) => {console.log('Error: ' + err);})
@@ -114,11 +114,11 @@ app.post('/reset-password/:token', async (req, res) => {
     const  { password } = req.body;
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_TOKEN);
+      const decoded = jwt.verify(token, 'ourSecretKey');
 
       const user = await db.collection('Users').findOne({
         _id: decoded.id,
-        resetPasswordToken: req.params.token,
+        resetPasswordToken: token,
         resetPasswordExpires: { $gt: Date.now() },
       });
   
@@ -234,7 +234,7 @@ app.post('/api/signup', async (req, res, next) => {
             "id": user._id,
         }
         
-        const token = jwt.sign(mail, process.env.JWT_TOKEN, { expiresIn: '30m' }); 
+        const token = jwt.sign(mail, 'ourSecretKey', { expiresIn: '30m' }); 
 
         const verificationEmail = {
     
