@@ -71,7 +71,7 @@ app.post('/api/forgot-password', async (req, res) => {
     
     const { email } = req.body;
   
-    const user = await db.collection('Users').findOne({ email });
+    const user = await db.collection('Users').findOne({ Email: email });
 
     if (!user) {
       return res.status(400).send('User with this email does not exist.');
@@ -90,10 +90,14 @@ app.post('/api/forgot-password', async (req, res) => {
     //await user.save();
   
     const resetEmail = {
-      to: email,
-      from: process.env.EMAIL,
-      subject: 'Password Reset',
-      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+
+    from: 'poosdtaskmanagerapi@gmail.com',
+        
+    to: email,
+      
+    subject: 'Password Reset',
+    
+    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
              Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n
              https://taskmanager-poosd-b45429dde588.herokuapp.com/reset-password/${token}\n\n
              If you did not request this, please ignore this email and your password will remain unchanged.\n`,
@@ -232,6 +236,7 @@ app.post('/api/signup', async (req, res, next) => {
         
         let mail = {
             "id": user._id,
+            "data": "token data"
         }
         
         const token = jwt.sign(mail, 'ourSecretKey', { expiresIn: '30m' }); 
