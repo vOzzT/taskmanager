@@ -50,7 +50,7 @@ app.get('/verify/:token', (req, res)=>{
     const db = client.db('COP4331');
   
     // Verifying the JWT token 
-    jwt.verify(token, process.env.JWT_TOKEN, function(err, decoded) {
+    jwt.verify(token, 'ourSecretKey', function(err, decoded) {
         if (err) {
             console.log(err);
             res.send("Email verification failed, possibly the link is invalid or expired");}
