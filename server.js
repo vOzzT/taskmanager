@@ -68,7 +68,7 @@ app.get('/verify/:token', (req, res)=>{
 
 app.post('/forgot-password', async (req, res) => {
     const db = client.db('COP4331');
-
+    
     const { email } = req.body;
   
     const user = await db.collection('Users').findOne({ email });
@@ -110,10 +110,11 @@ app.post('/forgot-password', async (req, res) => {
 
 app.post('/reset-password/:token', async (req, res) => {
     const db = client.db('COP4331');
+    const {token} = req.params;
     const  { password } = req.body;
 
     try {
-      const decoded = jwt.verify(req.params.token, process.env.JWT_TOKEN);
+      const decoded = jwt.verify(token, process.env.JWT_TOKEN);
 
       const user = await db.collection('Users').findOne({
         _id: decoded.id,
