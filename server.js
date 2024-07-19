@@ -59,7 +59,7 @@ app.get('/verify/:token', (req, res)=>{
             decId = new ObjectId(decoded.id);
             let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
             ret.then(function(ret) {
-                //console.log(ret);
+                console.log(ret);
              }).catch((err) => {console.log('Error: ' + err);})
         }
     });
@@ -81,7 +81,7 @@ app.post('/api/forgot-password', async (req, res) => {
     //decId = new ObjectId(decoded.id);
     let ret = db.collection('Users').updateOne({Email: email},{$set: { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000}});
             ret.then(function(ret) {
-                //console.log(ret);
+                console.log(ret);
              }).catch((err) => {console.log('Error: ' + err);})
   
     //user.resetPasswordToken = token;
@@ -120,11 +120,7 @@ app.post('/api/reset-password/:token', async (req, res) => {
     try {
       const decoded = jwt.verify(token, 'ourSecretKey');
 
-      const user = await db.collection('Users').findOne({
-        _id: decoded.id,
-        resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() },
-      });
+      const user = await db.collection('Users').findOne({ resetPasswordToken: token });
   
       if (!user) {
         return res.status(400).send('Password reset token is invalid or has expired.');
@@ -133,7 +129,7 @@ app.post('/api/reset-password/:token', async (req, res) => {
         decId = new ObjectId(decoded.id);
       let ret = db.collection('Users').updateOne({_id: decId},{$set: { password: hashedPassword, resetPasswordToken: undefined, resetPasswordExpires: undefined}});
             ret.then(function(ret) {
-                //console.log(ret);
+                console.log(ret);
              }).catch((err) => {console.log('Error: ' + err);})
       
   
