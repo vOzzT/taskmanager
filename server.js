@@ -56,7 +56,7 @@ app.get('/verify/:token', (req, res)=>{
             res.send("Email verification failed, possibly the link is invalid or expired");}
         else {
             res.send("Email verified successfully\n CLOSE!");
-            let decId = new ObjectId(decoded.id);
+            let decId = new ObjectId(decoded._id);
             let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
             ret.then(function(ret) {
                 console.log(ret);
@@ -226,12 +226,12 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         const user = db.collection('Users').findOne({ Login: login});
-        //console.log(user._id);
+        console.log(user._id);
         //var ret = { id: user._id, firstName: firstname, lastName: lastname, error: '' };
         //console.log(user._id);
         
         let mail = {
-            "id": user._id,
+            "_id": user._id,
             "data": "token data"
         }
         
