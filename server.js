@@ -66,7 +66,7 @@ app.get('/verify/:token', (req, res)=>{
     
 });
 
-app.post('/forgot-password', async (req, res) => {
+app.post('/api/forgot-password', async (req, res) => {
     const db = client.db('COP4331');
     
     const { email } = req.body;
@@ -108,7 +108,7 @@ app.post('/forgot-password', async (req, res) => {
     res.status(200).json({token});
 });
 
-app.post('/reset-password/:token', async (req, res) => {
+app.post('/api/reset-password/:token', async (req, res) => {
     const db = client.db('COP4331');
     const {token} = req.params;
     const  { password } = req.body;
