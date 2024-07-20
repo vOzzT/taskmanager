@@ -77,7 +77,6 @@ app.post('/api/forgot-password', async (req, res) => {
       return res.status(400).send('User with this email does not exist.');
     }
 
-    // Is the user verified
     const isUserVerified = user.isVerified;
     if(!isUserVerified){
         return res.status(400).json({ message: 'User not Verified' });
