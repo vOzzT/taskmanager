@@ -206,7 +206,7 @@ const checkToken = (req, res, next) => {
     }
 }
 
-app.get('/api/data', checkToken, (req, res) => {
+app.get('/api/data', checkToken, async (req, res) => {
         //verify the JWT token generated for the user
         jwt.verify(req.token, 'privatekey', (err, authorizedData) => {
             if(err){
