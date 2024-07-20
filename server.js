@@ -208,6 +208,7 @@ const checkToken = (req, res, next) => {
 
 app.get('/api/data', checkToken, (req, res) => {
         //verify the JWT token generated for the user
+        const db = client.db('COP4331');
         jwt.verify(req.token, 'privatekey', (err, authorizedData) => {
             if(err){
                 //If error send Forbidden (403)
@@ -215,9 +216,15 @@ app.get('/api/data', checkToken, (req, res) => {
                 res.sendStatus(403);
             } else {
                 //If token is successfully verified, we can send the autorized data 
+                let query = {};
+                userId = authorizedData.id;
+                if (userId) query.UserId = userId;
+                const events = await db.collection('Events').find(query).toArray();
+                res.status(200).json({ events: events, error: '' });
                 res.json({
                     message: 'Successful log in',
-                    authorizedData
+                    events: events,
+                    error: ''
                 });
                 console.log('SUCCESS: Connected to protected route');
             }
