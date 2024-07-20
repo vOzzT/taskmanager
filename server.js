@@ -206,9 +206,9 @@ const checkToken = (req, res, next) => {
     }
 }
 
-app.get('/api/data', checkToken, async (req, res) => {
+app.get('/api/data', checkToken, (req, res) => {
         //verify the JWT token generated for the user
-        jwt.verify(req.token, 'privatekey', (err, authorizedData) => {
+        jwt.verify(req.token, 'privatekey', async (err, authorizedData) => {
             if(err){
                 //If error send Forbidden (403)
                 console.log('ERROR: Could not connect to the protected route');
