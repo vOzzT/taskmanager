@@ -219,7 +219,10 @@ app.get('/api/data', checkToken, (req, res) => {
                 let query = {};
                 userId = authorizedData.id;
                 if (userId) query.UserId = userId;
-                const events = await db.collection('Events').find(query).toArray();
+                const events = db.collection('Events').find(query).toArray();
+                events.then(function(events) {
+                console.log(events);
+                 }).catch((err) => {console.log('Error: ' + err);})
                 //authorizedData
                 res.status(200).json({
                     message: 'Successful log in',
