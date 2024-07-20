@@ -223,6 +223,7 @@ app.get('/api/data', checkToken, async (req, res) => {
                 //authorizedData
                 res.status(200).json({
                     message: 'Successful log in',
+                    id: userId,
                     events: events,
                     error: ''
                 });
