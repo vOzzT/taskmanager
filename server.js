@@ -179,8 +179,8 @@ app.post('/api/login', async (req, res, next) => {
             return res.status(400).json({ message: 'User not Verified' });
         }
 
-
-        var ret = { id: user._id, firstName: user.FirstName, lastName: user.LastName, error: '' };
+        const token = jwt.sign({ id: user._id }, 'privatekey', { expiresIn: '1h' });
+        var ret = { token };
         res.status(200).json(ret);
 
     } catch (error) {
@@ -189,6 +189,49 @@ app.post('/api/login', async (req, res, next) => {
     }
     
 });
+
+const checkToken = (req, res, next) => {
+    const header = req.headers['authorization'];
+
+    if(typeof header !== 'undefined') {
+        const bearer = header.split(' ');
+        const token = bearer[1];
+
+        req.token = token;
+        next();
+    } else {
+        //If header is undefined return Forbidden (403)
+        res.sendStatus(403)
+    }
+}
+
+app.get('/api/data', checkToken, (req, res) => {
+        //verify the JWT token generated for the user
+        jwt.verify(req.token, 'privatekey', async (err, authorizedData) => {
+            if(err){
+                //If error send Forbidden (403)
+                console.log('ERROR: Could not connect to the protected route');
+                res.sendStatus(403);
+            } else {
+                //If token is successfully verified, we can send the autorized data 
+                const db = client.db('COP4331');
+                let query = {};
+                let eventArr = [];
+                userId = authorizedData.id;
+                if (userId) query.UserId = userId;
+                const events = await db.collection('Events').find(query).toArray();
+                //authorizedData
+                res.status(200).json({
+                    message: 'Successful log in',
+                    id: userId,
+                    events: events,
+                    error: ''
+                });
+                console.log('SUCCESS: Connected to protected route');
+            }
+        })
+    });
+
 
 app.post('/api/signup', async (req, res, next) => {
     // incoming: firstname, lastname, login, password, email, phone
@@ -231,7 +274,7 @@ app.post('/api/signup', async (req, res, next) => {
         const results = await db.collection('Users').find({Login: req.body.login}).toArray();
         const insertedData = await db.collection('Users').find({Login: req.body.login}).toArray();
         const user = await db.collection('Users').findOne({ Login: login});
-        console.log(user._id);
+        //console.log(user._id);
         //var ret = { id: user._id, firstName: firstname, lastName: lastname, error: '' };
         //console.log(user._id);
         
