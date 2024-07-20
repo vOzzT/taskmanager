@@ -222,12 +222,13 @@ app.get('/api/data', checkToken, (req, res) => {
                 const events = db.collection('Events').find(query).toArray();
                 events.then(function(events) {
                 console.log(events);
+                    let eventArr = events;
                  }).catch((err) => {console.log('Error: ' + err);})
                 //authorizedData
                 res.status(200).json({
                     message: 'Successful log in',
                     id: userId,
-                    events: events,
+                    events: eventArr,
                     error: ''
                 });
                 console.log('SUCCESS: Connected to protected route');
