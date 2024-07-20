@@ -76,6 +76,12 @@ app.post('/api/forgot-password', async (req, res) => {
     if (!user) {
       return res.status(400).send('User with this email does not exist.');
     }
+
+    // Is the user verified
+    const isUserVerified = user.isVerified;
+    if(!isUserVerified){
+        return res.status(400).json({ message: 'User not Verified' });
+    }
   
     const token = jwt.sign({ id: user._id }, 'ourSecretKey', { expiresIn: '1h' });
     //decId = new ObjectId(decoded.id);
