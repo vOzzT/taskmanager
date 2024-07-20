@@ -217,6 +217,7 @@ app.get('/api/data', checkToken, (req, res) => {
                 //If token is successfully verified, we can send the autorized data 
                 const db = client.db('COP4331');
                 let query = {};
+                let eventArr = [];
                 userId = authorizedData.id;
                 if (userId) query.UserId = userId;
                 const events = db.collection('Events').find(query).toArray();
