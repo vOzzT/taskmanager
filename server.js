@@ -208,7 +208,6 @@ const checkToken = (req, res, next) => {
 
 app.get('/api/data', checkToken, async (req, res) => {
         //verify the JWT token generated for the user
-        const db = client.db('COP4331');
         jwt.verify(req.token, 'privatekey', (err, authorizedData) => {
             if(err){
                 //If error send Forbidden (403)
@@ -216,6 +215,7 @@ app.get('/api/data', checkToken, async (req, res) => {
                 res.sendStatus(403);
             } else {
                 //If token is successfully verified, we can send the autorized data 
+                const db = client.db('COP4331');
                 let query = {};
                 userId = authorizedData.id;
                 if (userId) query.UserId = userId;
