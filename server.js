@@ -220,7 +220,7 @@ app.get('/api/data', checkToken, (req, res) => {
                 let eventArr = [];
                 userId = authorizedData.id;
                 if (userId) query.UserId = userId;
-                const events = db.collection('Events').find(query).toArray();
+                const events = await db.collection('Events').find(query).toArray();
                 //authorizedData
                 res.status(200).json({
                     message: 'Successful log in',
