@@ -179,7 +179,7 @@ app.post('/api/login', async (req, res, next) => {
             return res.status(400).json({ message: 'User not Verified' });
         }
 
-        const token = jwt.sign({ id: user._id }, 'privatekey', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, firstname: user.firstname, lastname: user.lastname }, 'privatekey', { expiresIn: '1h' });
         var ret = { token };
         res.status(200).json(ret);
 
@@ -218,12 +218,16 @@ app.get('/api/data', checkToken, (req, res) => {
                 let query = {};
                 let eventArr = [];
                 userId = authorizedData.id;
+                firstname = authorizedData.firstname;
+                lastname = authorizedData.lastname;
                 if (userId) query.UserId = userId;
                 const events = await db.collection('Events').find(query).toArray();
                 //authorizedData
                 res.status(200).json({
                     message: 'Successful log in',
                     id: userId,
+                    firstname: firstname,
+                    lastname: lastname,
                     events: events,
                     error: ''
                 });
