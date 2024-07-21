@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SignUp from '../components/Forgot';
+import Forgot from '../components/Forgot';
 
 const ForgetPage = () => {
     return (
