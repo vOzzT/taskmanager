@@ -181,8 +181,8 @@ app.post('/api/login', async (req, res, next) => {
 
         const data = {
             "id": user._id, 
-            "firstname": user.firstname, 
-            "lastname": user.lastname
+            "firstname": user.FirstName, 
+            "lastname": user.LastName
         }
 
         const token = jwt.sign(data, 'privatekey', { expiresIn: '1h' });
