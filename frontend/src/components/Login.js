@@ -30,8 +30,11 @@ function Login() {
             {
             //var user = {firstName:res.firstName,lastName:res.lastName,id:res.id} 
             const data = await response.json();
+            console.log(data);
             const token = data.token;
+            console.log(token);
             localStorage.setItem('authToken', token);
+            console.log("Token added to local storage");
         
             setMessage('');
             window.location.href = '/calendar';
