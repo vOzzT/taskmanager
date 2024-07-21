@@ -5,13 +5,50 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Toolbar';
 import RBCToolbar from './Toolbar';
+import jwt_decode from 'jwt-decode';
 
 const localizer = momentLocalizer(moment);
 
-function Calen() {
 
+
+function Calen() {
+  const [userData, setUserData] = useState(null);
+
+  // Function to get data from an API with Authorization Bearer token
+  const getData = async () => {
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      console.error('No auth token found in localStorage');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://taskmanager-poosd-b45429dde588.herokuapp.com/api/data', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const userData = await response.json();
+      setUserData(userData);
+      console.log('Data fetched successfully:', userData);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+const fullname = '{userData.firstname}' + '{userData.lastname}';
+	
   const [loggedInUser, setLoggedInUser] = useState({
-    name: 'John Doe', // Replace with actual user's name
+    name: fullname + , // Replace with actual user's name
   });
 
   const [events, setEvents] = useState([]);
