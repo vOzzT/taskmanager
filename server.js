@@ -179,7 +179,13 @@ app.post('/api/login', async (req, res, next) => {
             return res.status(400).json({ message: 'User not Verified' });
         }
 
-        const token = jwt.sign({ id: user._id, firstname: user.firstname, lastname: user.lastname }, 'privatekey', { expiresIn: '1h' });
+        const data = {
+            "id": user._id, 
+            "firstname": user.firstname, 
+            "lastname": user.lastname
+        }
+
+        const token = jwt.sign(data, 'privatekey', { expiresIn: '1h' });
         var ret = { token };
         res.status(200).json(ret);
 
