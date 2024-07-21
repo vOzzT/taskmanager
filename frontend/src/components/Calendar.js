@@ -454,6 +454,3 @@ function Calen() {
 }
 
 export default Calen;
-}
-
-export default Calen;
