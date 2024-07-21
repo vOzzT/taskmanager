@@ -16,7 +16,7 @@ function ResetPassword() {
         }
 
         try {
-            const response = await fetch(buildPath('api/reset-password/resetToken'), {
+            const response = await fetch(buildPath('api/reset-password/{resetToken}'), {
                 method: 'POST',
                 body: JSON.stringify({ newPassword: password }),
                 headers: { 'Content-Type': 'application/json' }
