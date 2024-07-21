@@ -20,19 +20,20 @@ function Login() {
         {
             const response = await fetch(buildPath('api/login'),{method:'POST',body:js,headers:{'Content-Type':'application/json'}});
         
-            var res = JSON.parse(await response.text());
-            console.log(res.id);
-            if( res.id <= 0 )
+            const data = await response.json();
+            const token = data.token;
+            console.log(token);
+            if( token <= 0 )
             {
                 console.log('User/Password combination incorrect');
             }
             else
             {
             //var user = {firstName:res.firstName,lastName:res.lastName,id:res.id} 
-            const data = await response.json();
-            console.log(data);
-            const token = data.token;
-            console.log(token);
+            //const data = await response.json();
+            //console.log(data);
+            //const token = data.token;
+           // console.log(res.token);
             localStorage.setItem('authToken', token);
             console.log("Token added to local storage");
         
