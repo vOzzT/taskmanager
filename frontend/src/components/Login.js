@@ -29,8 +29,9 @@ function Login() {
             else
             {
             //var user = {firstName:res.firstName,lastName:res.lastName,id:res.id} 
-            const token = res.data.token;
-            localStorage.setItem('authToken', JSON.stringify(token));
+            const data = response.json;
+            const token = data.token;
+            localStorage.setItem('authToken', token);
         
             setMessage('');
             window.location.href = '/calendar';
