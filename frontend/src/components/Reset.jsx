@@ -7,7 +7,6 @@ function ResetPassword() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
-    path = `${resetToken}/signin`
 
     const handleResetPassword = async (event) => {
         event.preventDefault();
