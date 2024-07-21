@@ -18,7 +18,7 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/forgot" element={<ForgotPage />} />
-        <Route path="/reset" element={<ResetPage />} />
+        <Route path="/reset/:resetToken" element={<ResetPage />} />
       </Routes>
     </Router>
   );
