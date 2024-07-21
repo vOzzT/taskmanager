@@ -3,9 +3,11 @@ import { Link, useParams } from 'react-router-dom';
 
 function ResetPassword() {
     const { resetToken } = useParams();
+    console.log(resetToken);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    path = `${resetToken}/signin`
 
     const handleResetPassword = async (event) => {
         event.preventDefault();
