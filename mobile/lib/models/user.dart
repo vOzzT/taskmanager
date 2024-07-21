@@ -7,6 +7,8 @@ class User {
   final String lastname;
   final String email;
   final String phone;
+  late String userEyeD;
+  late String token;
 
   User({
     required this.login,
@@ -38,6 +40,22 @@ class User {
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
     );
+  }
+
+  String getId() {
+    return userEyeD;
+  }
+
+  void setId(String s) {
+    userEyeD = s;
+  }
+
+  String getToken() {
+    return token;
+  }
+
+  void setToken(String s) {
+    token = s;
   }
 
   String toJson() => json.encode(toMap());
