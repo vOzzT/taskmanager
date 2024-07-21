@@ -72,7 +72,7 @@ class LoginPage extends State<LoginFormScreen> {
 
                   // welcome back, you've been missed!
                   Text(
-                    'Welcome back you\'ve been missed!',
+                    'Please login below!',
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontSize: 16,
@@ -102,7 +102,15 @@ class LoginPage extends State<LoginFormScreen> {
 
                   const SizedBox(height: 10),
 
-
+                  InkWell(
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/forgot');
+                    },
+                  ),
 
                   const SizedBox(height: 25),
 
