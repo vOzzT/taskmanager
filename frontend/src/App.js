@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import CalendarPage from './pages/CalandarPage';
+import ForgotPage from './pages/ForgotPage';
+import ResetPage from './pages/ResetPage';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/forgot" element={<ForgotPage />} />
+        <Route path="/reset/:resetToken" element={<ResetPage />} />
       </Routes>
     </Router>
   );
