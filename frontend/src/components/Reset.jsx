@@ -3,15 +3,15 @@ import { Link, useParams } from 'react-router-dom';
 
 function ResetPassword() {
     const { resetToken } = useParams();
-    console.log(resetToken);
-    console.log(`api/reset-password/${resetToken}`);
+    //console.log(resetToken);
+    //console.log(`api/reset-password/${resetToken}`);
     
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
 
     const path = `api/reset-password/${resetToken}`;
-    console.log(path);
+    //console.log(path);
     
     const handleResetPassword = async (event) => {
         event.preventDefault();
