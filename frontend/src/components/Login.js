@@ -29,7 +29,7 @@ function Login() {
             else
             {
             //var user = {firstName:res.firstName,lastName:res.lastName,id:res.id} 
-            const data = await response.json;
+            const data = await response.json();
             const token = data.token;
             localStorage.setItem('authToken', token);
         
