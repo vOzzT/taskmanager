@@ -8,7 +8,7 @@ function Forgot() {
         event.preventDefault();
         
         try {
-            const response = await fetch(buildPath('api/reset-password-request'), {
+            const response = await fetch(buildPath('api/reset-password'), {
                 method: 'POST',
                 body: JSON.stringify({ email }),
                 headers: { 'Content-Type': 'application/json' }
