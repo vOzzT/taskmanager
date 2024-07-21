@@ -2,7 +2,7 @@ import React from 'react';
 
 import Forgot from '../components/Forgot';
 
-const ForgetPage = () => {
+const ForgotPage = () => {
     return (
         <div>
             <Forgot />
