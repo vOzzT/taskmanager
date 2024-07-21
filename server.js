@@ -276,7 +276,7 @@ app.post('/api/signup', async (req, res, next) => {
         const user = await db.collection('Users').findOne({ Login: login});
         //console.log(user._id);
         //var ret = { id: user._id, firstName: firstname, lastName: lastname, error: '' };
-        //console.log(user._id);
+        console.log(user._id);
         
         let mail = {
             "_id": user._id,
