@@ -45,7 +45,7 @@ function Login() {
         {
             console.log("Something went sour...");
             console.log(loginName.value);
-            console.log(res.id);
+            //console.log(res.id);
             alert(e.toString());
             return;
         }
