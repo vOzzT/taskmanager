@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SignUp from '../components/Reset';
+import Reset from '../components/Reset';
 
 const ResetPage = () => {
     return (
