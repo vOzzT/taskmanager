@@ -7,7 +7,7 @@ function ResetPassword() {
     //console.log(`api/reset-password/${resetToken}`);
     
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    //const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
 
     const path = `api/reset-password/${resetToken}`;
@@ -67,19 +67,6 @@ function ResetPassword() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                <hr />
-                    <label htmlFor='confirmPassword' className='buttonHeader'>
-                        Confirm New Password:
-                    </label>
-                    <input
-                        type='password'
-                        id='confirmPassword'
-                        // placeholder='Confirm New Password'
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
-                    <hr />
                     <input type='submit' className='loginButton' value='Reset Password' />
                     {message && <p className='message'>{message}</p>}
                 </form>
