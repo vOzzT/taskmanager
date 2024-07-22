@@ -45,7 +45,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/verify/:token', (req, res)=>{
+app.get('/api/verify/:token', (req, res)=>{
     const {token} = req.params;
     const db = client.db('COP4331');
   
@@ -306,7 +306,7 @@ app.post('/api/signup', async (req, res, next) => {
             subject: 'Email Verification For Taskmanager App',
             
             // This would be the text of email body
-            text: `Press this link to verify your email: https://taskmanager-poosd-b45429dde588.herokuapp.com/verify/${token} Thanks`
+            text: `Press this link to verify your email: https://taskmanager-poosd-b45429dde588.herokuapp.com/api/verify/${token} Thanks`
         };
         
         transporter.sendMail(verificationEmail, function(error, info){
