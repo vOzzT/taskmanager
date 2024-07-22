@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SketchPicker } from "react-color";
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import { format } from 'date-fns';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Toolbar';
@@ -9,15 +10,41 @@ import RBCToolbar from './Toolbar';
 const localizer = momentLocalizer(moment);
 
 function Calen() {
+
   const [loggedInUser, setLoggedInUser] = useState('');
+  const [userId, setUserId] = useState('');
   const [data, setData] = useState([]);
 	
   const token = localStorage.getItem('authToken');
-  //console.log('Token retrieved:', token); // Check the token value
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  const [events, setEvents] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedStartDate, setSelectedStartDate] = useState(null); // State for start date
+  const [selectedStartTime, setSelectedStartTime] = useState(null); // State for start time
+  const [selectedEndDate, setSelectedEndDate] = useState(null);     // State for end date
+  const [selectedEndTime, setSelectedEndTime] = useState(null);     // State for end time
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventId, setEventId] = useState('');
+  const [selectEvent, setSelectEvent] = useState(null);
+  const [searchOption, setSearchOption] = useState('day');
+
+  const [searchByTitle, setSearchByTitle] = useState('');
+  const [searchByDate, setSearchByDate] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+
+  const [color, setColor] = useState('#ff0000');
+  const [showUserGuide, setShowUserGuide] = useState(false);
+  const [showSearchEvents, setShowSearchEvents] = useState(false);
+
+  const [message,setMessage] = useState('');
+
 
   const fetchData = async () => {
     try {
@@ -31,15 +58,19 @@ function Calen() {
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }
+
       const data = await response.json();
       setData(data);
+      setUserId(data.id);
       //console.log(data);
+      //alert(data + " " + data.firstname + " " + data.lastname);
       if (data && data.firstname && data.lastname) {
+        
       const fullname = `${data.firstname} ${data.lastname}`;
-      //console.log('Setting fullname:', fullname); // Log before setting state
-      setLoggedInUser({ name: fullname });
+      console.log('Setting fullname:', fullname); // Log before setting state
+      //setLoggedInUser(fullname);
       } else {
-      console.error('User data is missing firstname or lastname');
+        console.error('User data is missing firstname or lastname');
       }
     } catch (error) {
       console.log(error.message);
@@ -47,39 +78,133 @@ function Calen() {
   };
 
 
-   const app_name = 'taskmanager-poosd-b45429dde588';
-    function buildPath(route)
-    {
-    if (process.env.NODE_ENV === 'production')
-    {
-    return 'https://' + app_name + '.herokuapp.com/' + route;
-    }
-    else
-    {
-    return 'http://localhost:5000/' + route;
-    }
-    }
-	
-  const [events, setEvents] = useState([]);
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [selectedWeek, setSelectedWeek] = useState(null);
+  function toJsonDateTime(dateTime) {
+    let date = format(dateTime, 'M-d-y-k-m-s');
+    return date;
+  }
 
-  const [showModal, setShowModal] = useState(false);
-  const [selectedStartDate, setSelectedStartDate] = useState(null); // State for start date
-  const [selectedStartTime, setSelectedStartTime] = useState(null); // State for start time
-  const [selectedEndDate, setSelectedEndDate] = useState(null);     // State for end date
-  const [selectedEndTime, setSelectedEndTime] = useState(null);     // State for end time
-  const [eventTitle, setEventTitle] = useState('');
-  const [selectEvent, setSelectEvent] = useState(null);
-  const [searchOption, setSearchOption] = useState('day');
 
-  const [searchByTitle, setSearchByTitle] = useState('');
-  const [searchByDate, setSearchByDate] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  //Add Event
+  const apiAddEvent = async (title, start, end, startDate, endDate, color) => {
+    //event.preventDefault();
 
-  const [color, setColor] = useState('#ff0000');
-  const [showUserGuide, setShowUserGuide] = useState(false);
-  const [showSearchEvents, setShowSearchEvents] = useState(false);
+    //alert(title + "\n" + start + "\n" + end);
+    try {
+        const response = await fetch(buildPath('api/addEvent'), {
+            method: 'POST',
+            body: JSON.stringify({
+              '_id' : '',
+              'name': title,
+              'description': "",
+              'color': "blue",
+              'tags': "",
+              'isRecurring': false,
+              'hasReminder': false,
+              'userId': loggedInUser.UserId,
+              'endDate': end,
+              'startDate': start,
+            }),
+            headers: { 
+              'Accept': 'application/json',
+              'Content-Type': 'application/json' 
+            }
+        });
+
+        if (response.ok) {
+
+          const data = await response.json();
+
+          //alert(data.id);
+
+          const newEvent = {
+            title: eventTitle,
+            start: startDate.toDate(),
+            end: endDate.toDate(),
+            backgroundColor: color,
+            id : data.id
+          };
+          setEvents([...events, newEvent]);
+
+          setMessage('Event added!');
+          console.log('Event added successfully')
+        } else {
+          setMessage(response.error || 'Failed to add event.');
+        }
+    } catch (error) {
+        console.error('Error adding event:', error);
+        setMessage('Something went wrong when adding this event. Please try again later.');
+    }
+};
+
+//Delete Event
+const apiDeleteEvent = async (id) => {
+  
+  try {
+      const response = await fetch(buildPath('api/deleteEvent'), {
+          method: 'POST',
+          body: JSON.stringify({
+            "id": id, 
+          }),
+          headers: { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json' 
+          }
+      });
+
+      const res = await response.json();
+      if (response.ok) {
+          setMessage('Event deleted!');
+          console.log('Event deleted successfully')
+      } else {
+          setMessage(res.error || 'Failed to add event.');
+      }
+  } catch (error) {
+      console.error('Error deleting event:', error);
+      setMessage('Something went wrong when deleting this event. Please try again later.');
+  }
+};
+
+//Get events: relies on the searchEvent Api function
+const apiGetEvents = async () => {
+  //event.preventDefault();
+
+  //alert(title + "\n" + start + "\n" + end);
+  try {
+      const response = await fetch(buildPath('api/searchEvent'), {
+          method: 'POST',
+          body: JSON.stringify({
+            "userId": userId, 
+          }),
+          headers: { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json' 
+          }
+      });
+
+      const res = await response.json();
+      if (response.ok) {
+          setMessage('User Events retrieved!');
+          console.log('All User Event retrieved successfully')
+      } else {
+          setMessage(res.error || 'Failed to add event.');
+      }
+  } catch (error) {
+      console.error('Error deleting event:', error);
+      setMessage('Something went wrong when deleting this event. Please try again later.');
+  }
+};
+
+
+
+const app_name = 'taskmanager-poosd-b45429dde588';
+function buildPath(route) {
+    if (process.env.NODE_ENV === 'production') {
+        return 'https://' + app_name + '.herokuapp.com/' + route;
+    } else {
+        return 'http://localhost:5000/' + route;
+    }
+    //return 'http://localhost:5000/' + route;
+}
 
   const handleSelectSlot = (slotInfo) => {
     setShowModal(true);
@@ -117,6 +242,7 @@ function Calen() {
 
       if (endDateTime.isBefore(startDateTime)) {
         alert('End time must be after start time');
+        //alert(toJsonDateTime(endDateTime.toString()));
         return;
       }
 
@@ -127,13 +253,17 @@ function Calen() {
         );
         setEvents(updatedEvents);
       } else {
-        const newEvent = {
-          title: eventTitle,
-          start: startDateTime.toDate(),
-          end: endDateTime.toDate(),
-          backgroundColor: color,
-        };
-        setEvents([...events, newEvent]);
+        // const newEvent = {
+        //   title: eventTitle,
+        //   start: startDateTime.toDate(),
+        //   end: endDateTime.toDate(),
+        //   backgroundColor: color,
+        //   id : thisId
+        // };
+        // setEvents([...events, newEvent]);
+        //alert(eventTitle + "\n" + toJsonDateTime(startDateTime.toString()) + "\n" + toJsonDateTime(endDateTime.toString()))
+
+        apiAddEvent(eventTitle, toJsonDateTime(startDateTime.toString()), toJsonDateTime(endDateTime.toString()), startDateTime, endDateTime, color );
       }
 
       setShowModal(false);
@@ -152,10 +282,14 @@ function Calen() {
 
   const deleteEvent = () => {
     if (selectEvent) {
+
+      apiDeleteEvent(selectEvent.id);
+      //alert(selectEvent.id);
       const updatedEvents = events.filter((event) => event !== selectEvent);
       setEvents(updatedEvents);
       setShowModal(false);
       setEventTitle('');
+      setEventId('');
       setSelectEvent(null);
       setSelectedDay(selectEvent.start);
       setSelectedWeek(selectEvent.start);
@@ -231,8 +365,6 @@ function Calen() {
   const handleWeekClick = () => {
     setSelectedWeek(moment().startOf('week').toDate()); // Set selected week to current week
   };
-
-
 
   return (
     <>
@@ -379,10 +511,6 @@ function Calen() {
                     className="form-control mb-3"
                     value={selectedEndTime ? moment(selectedEndTime).format('HH:mm') : ''}
                     onChange={(e) => setSelectedEndTime(moment(e.target.value, 'HH:mm').toDate())}
-                  />
-                  <SketchPicker
-                    color={color}
-                    onChangeComplete={(color) => setColor(color.hex)}
                   />
                 </div>
                 <div className="modal-footer">
