@@ -10,9 +10,35 @@ const localizer = momentLocalizer(moment);
 
 function Calen() {
   const [loggedInUser, setLoggedInUser] = useState('Testing');
-
+  const [data, setData] = useState([]);
+	
   const token = localStorage.getItem('authToken');
   console.log('Token retrieved:', token); // Check the token value
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(buildPath('api/data'), {
+      method: 'GET',
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+      const data = await response.json();
+      setData(data);
+      console.log(data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
 
    const app_name = 'taskmanager-poosd-b45429dde588';
     function buildPath(route)
