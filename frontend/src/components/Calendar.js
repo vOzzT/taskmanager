@@ -65,6 +65,7 @@ function Calen() {
       //setEvents(data.events);
       console.log(data);
       console.log(data.events);
+      console.log(events);
       //alert(data + " " + data.firstname + " " + data.lastname);
       if (data && data.firstname && data.lastname) {
         
