@@ -11,7 +11,7 @@ function Home() {
 
 
             <div className = "card">
-                <h1 className = "card-title">NAME OF APP</h1>
+                <h1 className = "card-title">Task Manager</h1>
                 <hr/>
                 <button className="homeButton">LOGIN</button>
                 <hr/>

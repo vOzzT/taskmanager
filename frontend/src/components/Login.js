@@ -9,26 +9,31 @@ function Login() {
     var loginName;
     var loginPassword;
     const [message,setMessage] = useState('');
+    const [error, setError] = useState('');
     
     const doLogin = async event =>
     {
         event.preventDefault();
         var obj = {login:loginName.value,password:loginPassword.value};
         var js = JSON.stringify(obj);
+        setError('');
         
         try
         {
             const response = await fetch(buildPath('api/login'),{method:'POST',body:js,headers:{'Content-Type':'application/json'}});
-        
+
+            if( !response.ok )
+            {
+                //console.log('User/Password combination incorrect');
+                setError('Login failed. Please try again.');
+                return;
+            }
+            
             const data = await response.json();
             const token = data.token;
             console.log(token);
-            if( token <= 0 )
-            {
-                console.log('User/Password combination incorrect');
-            }
-            else
-            {
+            const dataLen = data.length;
+            console.log(dataLen);
             //var user = {firstName:res.firstName,lastName:res.lastName,id:res.id} 
             //const data = await response.json();
             //console.log(data);
@@ -39,7 +44,6 @@ function Login() {
         
             setMessage('');
             window.location.href = '/calendar';
-            }
         }
         catch(e)
         {
@@ -83,6 +87,7 @@ function Login() {
                 <hr/>
                 <input type="submit" id="loginButton" className="buttons" value="Login"
                 onClick={doLogin} />
+                {error && <p style={{ color: 'red' }}>{error}</p>}
 
                     <div className = "space"></div>
 
