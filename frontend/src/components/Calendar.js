@@ -13,7 +13,7 @@ function Calen() {
   const [data, setData] = useState([]);
 	
   const token = localStorage.getItem('authToken');
-  console.log('Token retrieved:', token); // Check the token value
+  //console.log('Token retrieved:', token); // Check the token value
 
   useEffect(() => {
     fetchData();
@@ -33,10 +33,10 @@ function Calen() {
       }
       const data = await response.json();
       setData(data);
-      console.log(data);
+      //console.log(data);
       if (data && data.firstname && data.lastname) {
       const fullname = `${data.firstname} ${data.lastname}`;
-      console.log('Setting fullname:', fullname); // Log before setting state
+      //console.log('Setting fullname:', fullname); // Log before setting state
       setLoggedInUser({ name: fullname });
       } else {
       console.error('User data is missing firstname or lastname');
