@@ -9,12 +9,14 @@ function Login() {
     var loginName;
     var loginPassword;
     const [message,setMessage] = useState('');
+    const [error, setError] = useState('');
     
     const doLogin = async event =>
     {
         event.preventDefault();
         var obj = {login:loginName.value,password:loginPassword.value};
         var js = JSON.stringify(obj);
+        setError('');
         
         try
         {
@@ -22,8 +24,9 @@ function Login() {
 
             if( !response.ok )
             {
-                console.log('User/Password combination incorrect');
-                throw new Error('Login failed');
+                //console.log('User/Password combination incorrect');
+                setError('Login failed. Please try again.');
+                return;
             }
             
             const data = await response.json();
@@ -84,6 +87,7 @@ function Login() {
                 <hr/>
                 <input type="submit" id="loginButton" className="buttons" value="Login"
                 onClick={doLogin} />
+                {error && <p style={{ color: 'red' }}>{error}</p>}
 
                     <div className = "space"></div>
 
