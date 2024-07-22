@@ -45,6 +45,10 @@ function Calen() {
 
   const [message,setMessage] = useState('');
 
+  function toJsonDateTime(dateTime) {
+    let date = format(dateTime, 'M-d-y-k-m-s');
+    return date;
+  }
 
   const fetchData = async () => {
     try {
@@ -110,10 +114,7 @@ function Calen() {
   };
 
 
-  function toJsonDateTime(dateTime) {
-    let date = format(dateTime, 'M-d-y-k-m-s');
-    return date;
-  }
+
 
 
   //Add Event
