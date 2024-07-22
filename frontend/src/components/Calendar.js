@@ -12,6 +12,38 @@ function Calen() {
   const [userData, setUserData] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
 
+  const token = localStorage.getItem('authToken');
+  console.log('Token retrieved:', token); // Check the token value
+
+  try {
+  const response = await fetch(buildPath('api/data', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Network response was not ok: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  console.log('API response data:', data); // Log the entire response
+} catch (error) {
+  console.error('Error fetching data:', error);
+}
+
+  if (data && data.firstname && data.lastname) {
+  const fullname = `${data.firstname} ${data.lastname}`;
+  console.log('Setting fullname:', fullname); // Log before setting state
+  setLoggedInUser({ name: fullname });
+  } else {
+  console.error('User data is missing firstname or lastname');
+  }
+
+
+
   // Function to get data from an API with Authorization Bearer token
     const getData = async () => {
     const token = localStorage.getItem('authToken');
