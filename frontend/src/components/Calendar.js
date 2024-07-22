@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SketchPicker } from "react-color";
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
