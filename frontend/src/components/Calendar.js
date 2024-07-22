@@ -42,7 +42,11 @@ function Calen() {
     }
   };
 
-const fullname = '${userData.firstname}' + '${userData.lastname}';
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const fullname = '${userData.firstname}' + '${userData.lastname}';
 	
   const [loggedInUser, setLoggedInUser] = useState({
     name: fullname
