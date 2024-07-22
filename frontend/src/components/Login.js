@@ -25,7 +25,7 @@ function Login() {
             console.log(token);
             const dataLen = data.length;
             console.log(dataLen);
-            if( data.message >= 0 )
+            if( !response.ok )
             {
                 console.log('User/Password combination incorrect');
             }
