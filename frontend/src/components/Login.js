@@ -8,7 +8,7 @@ function Login() {
 
     var loginName;
     var loginPassword;
-    const [message,setMessage] = useState('');
+    const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     
     const doLogin = async event =>
@@ -85,9 +85,14 @@ function Login() {
                     <label className='buttonHeader' for = "password">Password:</label>
                     <input type="password" id="loginPassword" placeholder="Password" ref={(c) => loginPassword = c} />
                 <hr/>
-                <input type="submit" id="loginButton" className="buttons" value="Login"
+                <input type="submit" id="loginButton" className="loginButton" value="LOGIN"
                 onClick={doLogin} />
                 {error && <p style={{ color: 'red' }}>{error}</p>}
+
+                <div className = "space"></div>
+                <div>Forgot Password? Click below</div>
+                <hr/>
+                    <Link to ="/forgot"><button className="loginButton">FORGOT PASSWORD?</button></Link>
 
                     <div className = "space"></div>
 

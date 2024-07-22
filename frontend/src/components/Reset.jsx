@@ -36,6 +36,7 @@ function ResetPassword() {
         } catch (error) {
             console.error('Error resetting password:', error);
             setMessage('Something went wrong. ' + 'Please try again later.');
+            window.location.href = '/login';
         }
     };
 
