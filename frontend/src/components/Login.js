@@ -23,7 +23,9 @@ function Login() {
             const data = await response.json();
             const token = data.token;
             console.log(token);
-            if( token <= 0 )
+            tokenLen = token.length;
+            console.log(tokenLen);
+            if( token.length <= 0 )
             {
                 console.log('User/Password combination incorrect');
             }
