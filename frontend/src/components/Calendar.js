@@ -13,7 +13,7 @@ function Calen() {
   const [loggedInUser, setLoggedInUser] = useState(null);
 
   // Function to get data from an API with Authorization Bearer token
-  const getData = async () => {
+    const getData = async () => {
     const token = localStorage.getItem('authToken');
     
     if (!token) {
@@ -34,24 +34,20 @@ function Calen() {
         throw new Error('Network response was not ok');
       }
 
-      const userData = await response.json();
-      setUserData(userData);
-      console.log('Data fetched successfully:', userData);
+      const data = await response.json();
+      setUserData(data);
 
-      // Calculate fullname and update loggedInUser state
-      if (userData.firstname && userData.lastname) {
-        const fullname = `${userData.firstname} ${userData.lastname}`;
+      // Update loggedInUser state
+      if (data && data.firstname && data.lastname) {
+        const fullname = `${data.firstname} ${data.lastname}`;
         setLoggedInUser({ name: fullname });
-        console.log('Fullname:', fullname);
+      } else {
+        console.error('User data is missing firstname or lastname');
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
-
-  useEffect(() => {
-    getData();
-  }, []);
 	
   const [events, setEvents] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
@@ -225,6 +221,10 @@ function Calen() {
     setSelectedWeek(moment().startOf('week').toDate()); // Set selected week to current week
   };
 
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"></link>
@@ -232,7 +232,7 @@ function Calen() {
         {/* Header */}
         <header className = "calendarHeader" style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)', padding: '10px', marginBottom: '0px', display: 'flex', justifyContent: 'space-between' }}>
           <div>
-            <h2 style={{ textAlign: 'center', color: 'white' }}>Welcome, {loggedInUser.fullname}</h2>
+            <h2 style={{ textAlign: 'center', color: 'white' }}>Welcome, {loggedInUser.name}</h2>
             <h3 style={{ textAlign: 'center', color: 'white' }}>Composition Calendar</h3>
           </div>
           <button className="btn btn-danger" onClick={() => window.location.href = "/"}>Logout</button>
