@@ -9,7 +9,7 @@ import RBCToolbar from './Toolbar';
 const localizer = momentLocalizer(moment);
 
 function Calen() {
-  const [loggedInUser, setLoggedInUser] = useState('Testing');
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [data, setData] = useState([]);
 	
   const token = localStorage.getItem('authToken');
@@ -34,6 +34,13 @@ function Calen() {
       const data = await response.json();
       setData(data);
       console.log(data);
+      if (data && data.firstname && data.lastname) {
+      const fullname = `${data.firstname} ${data.lastname}`;
+      console.log('Setting fullname:', fullname); // Log before setting state
+      setLoggedInUser({ name: fullname });
+      } else {
+      console.error('User data is missing firstname or lastname');
+      }
     } catch (error) {
       console.log(error.message);
     }
