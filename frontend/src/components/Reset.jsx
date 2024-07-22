@@ -10,7 +10,7 @@ function ResetPassword() {
     
     //const [password, setPassword] = useState('');
     //const [confirmPassword, setConfirmPassword] = useState('');
-    var password;
+    var newPassword;
     const [message, setMessage] = useState('');
 
     const path = `api/reset-password/${resetToken}`;
@@ -18,10 +18,12 @@ function ResetPassword() {
     
     const handleResetPassword = async (event) => {
         event.preventDefault();
+        var obj = {password:newPassword.value};
+        var js = JSON.stringify(obj);
         try {
             const response = await fetch(buildPath(path), {
                 method: 'POST',
-                body: JSON.stringify({ password: password.value }),
+                body: js,
                 headers: { 'Content-Type': 'application/json' }
             });
 
@@ -56,7 +58,7 @@ function ResetPassword() {
                     <label htmlFor='password' className='buttonHeader'>
                         New Password:
                     </label>
-                    <input type="password" id="password" placeholder="Password" ref={(c) => password = c} />
+                    <input type="password" id="password" placeholder="Password" ref={(c) => newPassword = c} />
                     <input type='submit' className='loginButton' value='Reset Password' />
                     {message && <p className='message'>{message}</p>}
                 </form>
