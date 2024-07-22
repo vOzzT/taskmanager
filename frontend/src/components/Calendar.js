@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SketchPicker } from "react-color";
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
@@ -9,11 +9,57 @@ import RBCToolbar from './Toolbar';
 const localizer = momentLocalizer(moment);
 
 function Calen() {
+  const [loggedInUser, setLoggedInUser] = useState('');
+  const [data, setData] = useState([]);
+	
+  const token = localStorage.getItem('authToken');
+  //console.log('Token retrieved:', token); // Check the token value
 
-  const [loggedInUser, setLoggedInUser] = useState({
-    name: 'John Doe', // Replace with actual user's name
-  });
+  useEffect(() => {
+    fetchData();
+  }, []);
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch(buildPath('api/data'), {
+      method: 'GET',
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+      const data = await response.json();
+      setData(data);
+      //console.log(data);
+      if (data && data.firstname && data.lastname) {
+      const fullname = `${data.firstname} ${data.lastname}`;
+      //console.log('Setting fullname:', fullname); // Log before setting state
+      setLoggedInUser({ name: fullname });
+      } else {
+      console.error('User data is missing firstname or lastname');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+   const app_name = 'taskmanager-poosd-b45429dde588';
+    function buildPath(route)
+    {
+    if (process.env.NODE_ENV === 'production')
+    {
+    return 'https://' + app_name + '.herokuapp.com/' + route;
+    }
+    else
+    {
+    return 'http://localhost:5000/' + route;
+    }
+    }
+	
   const [events, setEvents] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(null);
@@ -185,6 +231,8 @@ function Calen() {
   const handleWeekClick = () => {
     setSelectedWeek(moment().startOf('week').toDate()); // Set selected week to current week
   };
+
+
 
   return (
     <>
@@ -451,9 +499,6 @@ function Calen() {
       </div>
     </>
   );
-}
-
-export default Calen;
 }
 
 export default Calen;

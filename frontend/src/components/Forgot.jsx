@@ -46,7 +46,7 @@ function Forgot() {
                         Enter your email address:
                     </label>
                     <input
-                        type='password'
+                        type='text'
                         id='email'
                         // placeholder='Email'
                         value={email}

@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+
+
 function ResetPassword() {
     const { resetToken } = useParams();
     //console.log(resetToken);
     //console.log(`api/reset-password/${resetToken}`);
     
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    //const [password, setPassword] = useState('');
+    //const [confirmPassword, setConfirmPassword] = useState('');
+    var newPassword;
     const [message, setMessage] = useState('');
 
     const path = `api/reset-password/${resetToken}`;
@@ -15,16 +18,12 @@ function ResetPassword() {
     
     const handleResetPassword = async (event) => {
         event.preventDefault();
-
-        if (password !== confirmPassword) {
-            setMessage('Passwords do not match.');
-            return;
-        }
-
+        var obj = {password:newPassword.value};
+        var js = JSON.stringify(obj);
         try {
             const response = await fetch(buildPath(path), {
                 method: 'POST',
-                body: JSON.stringify({ password }),
+                body: js,
                 headers: { 'Content-Type': 'application/json' }
             });
 
@@ -59,27 +58,7 @@ function ResetPassword() {
                     <label htmlFor='password' className='buttonHeader'>
                         New Password:
                     </label>
-                    <input
-                        type='password'
-                        id='password'
-                        // placeholder='New Password'
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                <hr />
-                    <label htmlFor='confirmPassword' className='buttonHeader'>
-                        Confirm New Password:
-                    </label>
-                    <input
-                        type='password'
-                        id='confirmPassword'
-                        // placeholder='Confirm New Password'
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
-                    <hr />
+                    <input type="password" id="password" placeholder="Password" ref={(c) => newPassword = c} />
                     <input type='submit' className='loginButton' value='Reset Password' />
                     {message && <p className='message'>{message}</p>}
                 </form>
