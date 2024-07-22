@@ -61,14 +61,14 @@ function Calen() {
 
       const data = await response.json();
       setData(data);
-      setUserId(data.id);
-      //console.log(data);
+      setUserId({id: data.id});
+      console.log(data);
       //alert(data + " " + data.firstname + " " + data.lastname);
       if (data && data.firstname && data.lastname) {
         
       const fullname = `${data.firstname} ${data.lastname}`;
       console.log('Setting fullname:', fullname); // Log before setting state
-      //setLoggedInUser(fullname);
+      setLoggedInUser({ name: fullname });
       } else {
         console.error('User data is missing firstname or lastname');
       }
@@ -98,9 +98,7 @@ function Calen() {
               'description': "",
               'color': "blue",
               'tags': "",
-              'isRecurring': false,
-              'hasReminder': false,
-              'userId': loggedInUser.UserId,
+              'userId': data.id,
               'endDate': end,
               'startDate': start,
             }),
@@ -112,7 +110,7 @@ function Calen() {
 
         if (response.ok) {
 
-          const data = await response.json();
+          const res = await response.json();
 
           //alert(data.id);
 
