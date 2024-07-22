@@ -56,7 +56,7 @@ function ResetPassword() {
                     <label htmlFor='password' className='buttonHeader'>
                         New Password:
                     </label>
-                    <input type="text" id="password" placeholder="Password" ref={(c) => password = c} />
+                    <input type="password" id="password" placeholder="Password" ref={(c) => password = c} />
                     <input type='submit' className='loginButton' value='Reset Password' />
                     {message && <p className='message'>{message}</p>}
                 </form>
