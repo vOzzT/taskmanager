@@ -93,7 +93,6 @@ function Calen() {
         const response = await fetch(buildPath('api/addEvent'), {
             method: 'POST',
             body: JSON.stringify({
-              '_id' : '',
               'name': title,
               'description': "",
               'color': "blue",
@@ -115,11 +114,12 @@ function Calen() {
           //alert(data.id);
 
           const newEvent = {
+            id: res.id, 
             title: eventTitle,
             start: startDate.toDate(),
             end: endDate.toDate(),
             backgroundColor: color,
-            id : data.id
+            userId : data.id
           };
           setEvents([...events, newEvent]);
 
