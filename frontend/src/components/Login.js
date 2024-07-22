@@ -19,18 +19,18 @@ function Login() {
         try
         {
             const response = await fetch(buildPath('api/login'),{method:'POST',body:js,headers:{'Content-Type':'application/json'}});
-        
+
+            if( !response.ok )
+            {
+                console.log('User/Password combination incorrect');
+                throw new Error('Login failed');
+            }
+            
             const data = await response.json();
             const token = data.token;
             console.log(token);
             const dataLen = data.length;
             console.log(dataLen);
-            if( !response.ok )
-            {
-                console.log('User/Password combination incorrect');
-            }
-            else
-            {
             //var user = {firstName:res.firstName,lastName:res.lastName,id:res.id} 
             //const data = await response.json();
             //console.log(data);
@@ -41,7 +41,6 @@ function Login() {
         
             setMessage('');
             window.location.href = '/calendar';
-            }
         }
         catch(e)
         {
