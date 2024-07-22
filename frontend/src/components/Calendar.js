@@ -5,11 +5,8 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Toolbar';
 import RBCToolbar from './Toolbar';
-import jwt_decode from 'jwt-decode';
 
 const localizer = momentLocalizer(moment);
-
-
 
 function Calen() {
   const [userData, setUserData] = useState(null);
@@ -45,10 +42,10 @@ function Calen() {
     }
   };
 
-const fullname = '{userData.firstname}' + '{userData.lastname}';
+const fullname = '${userData.firstname}' + '${userData.lastname}';
 	
   const [loggedInUser, setLoggedInUser] = useState({
-    name: fullname + , // Replace with actual user's name
+    name: fullname
   });
 
   const [events, setEvents] = useState([]);
