@@ -72,14 +72,18 @@ function Calen() {
       let ID = '';
       let EVENTTITLE = '';
       let START = '';
+      let STARTSTR = '';
       let END = '';
+      let ENDSTR = '';
       let BGCOLOR = '';
       let USERID = '';
       for (i in data.events){
 	ID = data.events[i]._id;
 	EVENTTITLE = data.events[i].Name;
-	START = new Date(data.events[i].StartDate);
-	END = new Date(data.events[i].EndDate);
+	STARTSTR = data.events[i].StartDate;
+	ENDSTR = data.events[i].EndDate;
+	START = STARTSTR.toDate();
+	END = ENDSTR.toDate();
 	BGCOLOR = data.events[i].Color;
 	USERID = data.events[i].UserId;
 	const obj = {
@@ -91,7 +95,7 @@ function Calen() {
             userId : USERID
         };
 	console.log(obj);
-        setEvents([...events, obj]);
+        setEvents(events => [...events, obj]);
 	console.log(data.events[i]);
 	console.log(events);
       }
