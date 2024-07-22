@@ -232,7 +232,7 @@ function Calen() {
         {/* Header */}
         <header className = "calendarHeader" style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)', padding: '10px', marginBottom: '0px', display: 'flex', justifyContent: 'space-between' }}>
           <div>
-            <h2 style={{ textAlign: 'center', color: 'white' }}>Welcome, {loggedInUser.name}</h2>
+            <h2 style={{ textAlign: 'center', color: 'white' }}>Welcome, {loggedInUser.fullname}</h2>
             <h3 style={{ textAlign: 'center', color: 'white' }}>Composition Calendar</h3>
           </div>
           <button className="btn btn-danger" onClick={() => window.location.href = "/"}>Logout</button>
