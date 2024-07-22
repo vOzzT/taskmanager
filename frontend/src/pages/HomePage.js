@@ -21,7 +21,7 @@ function HomePage() {
 
 
             <div className = "card">
-                <h1 className = "card-title">NAME OF APP</h1>
+                <h1 className = "card-title">Task Manager</h1>
                 <hr/>
                 <button onClick={goToLogin}  className="homeButton">LOGIN</button>
                 <hr/>
