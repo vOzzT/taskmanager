@@ -9,77 +9,10 @@ import RBCToolbar from './Toolbar';
 const localizer = momentLocalizer(moment);
 
 function Calen() {
-  const [userData, setUserData] = useState(null);
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState('Testing');
 
   const token = localStorage.getItem('authToken');
   console.log('Token retrieved:', token); // Check the token value
-
-  try {
-  const response = await fetch(buildPath('api/data', {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  console.log('API response data:', data); // Log the entire response
-} catch (error) {
-  console.error('Error fetching data:', error);
-}
-
-  if (data && data.firstname && data.lastname) {
-  const fullname = `${data.firstname} ${data.lastname}`;
-  console.log('Setting fullname:', fullname); // Log before setting state
-  setLoggedInUser({ name: fullname });
-  } else {
-  console.error('User data is missing firstname or lastname');
-  }
-
-
-
-  // Function to get data from an API with Authorization Bearer token
-    const getData = async () => {
-    const token = localStorage.getItem('authToken');
-    
-    if (!token) {
-      console.error('No auth token found in localStorage');
-      return;
-    }
-
-    try {
-      const response = await fetch(buildPath('api/data'), {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      setUserData(data);
-
-      // Update loggedInUser state
-      if (data && data.firstname && data.lastname) {
-        const fullname = `${data.firstname} ${data.lastname}`;
-        setLoggedInUser({ name: fullname });
-      } else {
-        console.error('User data is missing firstname or lastname');
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
 
    const app_name = 'taskmanager-poosd-b45429dde588';
     function buildPath(route)
@@ -93,11 +26,6 @@ function Calen() {
     return 'http://localhost:5000/' + route;
     }
     }
-
-  useEffect(() => {
-    console.log("Call is being done");
-    getData();
-  }, []);
 	
   const [events, setEvents] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
