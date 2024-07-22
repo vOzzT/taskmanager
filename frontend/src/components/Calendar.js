@@ -9,7 +9,7 @@ import RBCToolbar from './Toolbar';
 const localizer = momentLocalizer(moment);
 
 function Calen() {
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState('');
   const [data, setData] = useState([]);
 	
   const token = localStorage.getItem('authToken');
