@@ -23,7 +23,7 @@ function Login() {
             const data = await response.json();
             const token = data.token;
             console.log(token);
-            dataLen = data.length;
+            const dataLen = data.length;
             console.log(dataLen);
             if( dataLen <= 0 )
             {
