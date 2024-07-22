@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+var password;
+
 function ResetPassword() {
     const { resetToken } = useParams();
     //console.log(resetToken);
     //console.log(`api/reset-password/${resetToken}`);
     
-    const [password, setPassword] = useState('');
+    //const [password, setPassword] = useState('');
     //const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
 
@@ -18,7 +20,7 @@ function ResetPassword() {
         try {
             const response = await fetch(buildPath(path), {
                 method: 'POST',
-                body: JSON.stringify({ password: password }),
+                body: JSON.stringify({ password: password.value }),
                 headers: { 'Content-Type': 'application/json' }
             });
 
@@ -53,14 +55,7 @@ function ResetPassword() {
                     <label htmlFor='password' className='buttonHeader'>
                         New Password:
                     </label>
-                    <input
-                        type='password'
-                        id='password'
-                        // placeholder='New Password'
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+                    <input type="text" id="password" placeholder="Password" ref={(c) => password = c} />
                     <input type='submit' className='loginButton' value='Reset Password' />
                     {message && <p className='message'>{message}</p>}
                 </form>
