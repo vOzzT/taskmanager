@@ -125,7 +125,7 @@ function Calen() {
             userId : data.id
           };
           setEvents([...events, newEvent]);
-
+	  console.log(events);
           setMessage('Event added!');
           console.log('Event added successfully')
         } else {
