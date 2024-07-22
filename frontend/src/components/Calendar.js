@@ -22,7 +22,7 @@ function Calen() {
     }
 
     try {
-      const response = await fetch('https://taskmanager-poosd-b45429dde588.herokuapp.com/api/data', {
+      const response = await fetch(buildPath('api/data'), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -48,6 +48,11 @@ function Calen() {
       console.error('Error fetching data:', error);
     }
   };
+
+  useEffect(() => {
+    console.log("Call is being done");
+    getData();
+  }, []);
 	
   const [events, setEvents] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
@@ -221,9 +226,7 @@ function Calen() {
     setSelectedWeek(moment().startOf('week').toDate()); // Set selected week to current week
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+
 
   return (
     <>
