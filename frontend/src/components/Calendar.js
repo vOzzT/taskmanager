@@ -62,7 +62,7 @@ function Calen() {
       const data = await response.json();
       setData(data);
       setUserId({id: data.id});
-      setEvents(data.events)
+      setEvents(data.events);
       console.log(data);
       //alert(data + " " + data.firstname + " " + data.lastname);
       if (data && data.firstname && data.lastname) {
