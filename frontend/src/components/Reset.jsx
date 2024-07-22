@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-var password;
+
 
 function ResetPassword() {
     const { resetToken } = useParams();
@@ -10,6 +10,7 @@ function ResetPassword() {
     
     //const [password, setPassword] = useState('');
     //const [confirmPassword, setConfirmPassword] = useState('');
+    var password;
     const [message, setMessage] = useState('');
 
     const path = `api/reset-password/${resetToken}`;
