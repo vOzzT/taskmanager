@@ -15,12 +15,6 @@ function ResetPassword() {
     
     const handleResetPassword = async (event) => {
         event.preventDefault();
-
-        if (password !== confirmPassword) {
-            setMessage('Passwords do not match.');
-            return;
-        }
-
         try {
             const response = await fetch(buildPath(path), {
                 method: 'POST',
