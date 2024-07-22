@@ -67,6 +67,7 @@ function Calen() {
       for (i in data.events){
 	setEvents([...events, data.events[i]]);
 	console.log(data.events[i]);
+	console.log(events);
       }
       //setEvents(data.events);
       console.log(data);
