@@ -10,6 +10,7 @@ const localizer = momentLocalizer(moment);
 
 function Calen() {
   const [userData, setUserData] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   // Function to get data from an API with Authorization Bearer token
   const getData = async () => {
@@ -37,6 +38,12 @@ function Calen() {
       setUserData(userData);
       console.log('Data fetched successfully:', userData);
 
+      // Calculate fullname and update loggedInUser state
+      if (userData.firstname && userData.lastname) {
+        const fullname = `${userData.firstname} ${userData.lastname}`;
+        setLoggedInUser({ name: fullname });
+        console.log('Fullname:', fullname);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -45,13 +52,7 @@ function Calen() {
   useEffect(() => {
     getData();
   }, []);
-
-  const fullname = '${userData.firstname}' + '${userData.lastname}';
 	
-  const [loggedInUser, setLoggedInUser] = useState({
-    name: fullname
-  });
-
   const [events, setEvents] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(null);
