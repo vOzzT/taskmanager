@@ -78,15 +78,15 @@ function Calen() {
       for (i in data.events){
 	ID = data.events[i]._id;
 	EVENTTITLE = data.events[i].Name;
-	START = data.events[i].StartDate;
-	END = data.events[i].EndDate;
+	START = new Date(data.events[i].StartDate);
+	END = new Date(data.events[i].EndDate);
 	BGCOLOR = data.events[i].Color;
 	USERID = data.events[i].UserId;
 	const obj = {
             id: ID, 
             title: EVENTTITLE,
-            start: START.toDate(),
-            end: END.toDate(),
+            start: START,
+            end: END,
             backgroundColor: BGCOLOR,
             userId : USERID
         };
