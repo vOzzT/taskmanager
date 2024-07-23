@@ -109,7 +109,7 @@ function Calen() {
             userId : USERID
         };
 	console.log(obj);
-        setEvents(events => [...events, obj]);
+        setEvents([...events, obj]);
 	console.log(data.events[i]);
 	console.log(events);
       }
