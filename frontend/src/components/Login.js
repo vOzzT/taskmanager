@@ -1,36 +1,55 @@
+import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 
-var loginName;
-var loginPassword;
-const [message, setMessage] = useState('');
 
 
 function Login() {
-    const doLogin = async event => {
+    
+
+    var loginName;
+    var loginPassword;
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    
+    const doLogin = async event =>
+    {
         event.preventDefault();
-        var obj = { login: loginName.value, password: loginPassword.value };
+        var obj = {login:loginName.value,password:loginPassword.value};
         var js = JSON.stringify(obj);
-        try {
-            const response = await fetch(buildPath('api/login'),
-                {
-                    method: 'POST', body: js, headers: {
-                        'Content-Type':
-                            'application/json'
-                    }
-                });
-            var res = JSON.parse(await response.text());
-            if (res.id <= 0) {
-                setMessage('User/Password combination incorrect');
+        setError('');
+        
+        try
+        {
+            const response = await fetch(buildPath('api/login'),{method:'POST',body:js,headers:{'Content-Type':'application/json'}});
+
+            if( !response.ok )
+            {
+                //console.log('User/Password combination incorrect');
+                setError('Login failed. Please try again.');
+                return;
             }
-            else {
-                var user =
-                    { firstName: res.firstName, lastName: res.lastName, id: res.id }
-                localStorage.setItem('user_data', JSON.stringify(user));
-                setMessage('');
-                window.location.href = '/cards';
-            }
+            
+            const data = await response.json();
+            const token = data.token;
+            console.log(token);
+            const dataLen = data.length;
+            console.log(dataLen);
+            //var user = {firstName:res.firstName,lastName:res.lastName,id:res.id} 
+            //const data = await response.json();
+            //console.log(data);
+            //const token = data.token;
+           // console.log(res.token);
+            localStorage.setItem('authToken', token);
+            console.log("Token added to local storage");
+        
+            setMessage('');
+            window.location.href = '/calendar';
         }
-        catch (e) {
+        catch(e)
+        {
+            console.log("Something went sour...");
+            console.log(loginName.value);
+            //console.log(res.id);
             alert(e.toString());
             return;
         }
@@ -49,17 +68,44 @@ function Login() {
     }
     }
 
+
     return (
-        <div id="loginDiv">
-            <span id="inner-title">PLEASE LOG IN</span><br />
-            <input type="text" id="loginName" placeholder="Username"
-                ref={(c) => loginName = c} />
-            <input type="password" id="loginPassword" placeholder="Password"
-                ref={(c) => loginPassword = c} />
-            <input type="submit" id="loginButton" className="buttons" value="Do It"
+        
+        <div className='Composition'>
+
+            <div className="black_sideline">
+            </div>
+
+            <div className = "card">
+                <h1 className = "card-title">LOGIN</h1>
+                <hr/>
+                    <label className='buttonHeader' for = "username" id = "user" >Username:</label>
+                    <input type="text" id="loginName" placeholder="Username" ref={(c) => loginName = c} />
+                <hr/>
+                    <label className='buttonHeader' for = "password">Password:</label>
+                    <input type="password" id="loginPassword" placeholder="Password" ref={(c) => loginPassword = c} />
+                <hr/>
+                <input type="submit" id="loginButton" className="loginButton" value="LOGIN"
                 onClick={doLogin} />
-            <span id="loginResult">{message}</span>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+
+                <div className = "space"></div>
+                <div>Forgot Password? Click below</div>
+                <hr/>
+                    <Link to ="/forgot"><button className="loginButton">FORGOT PASSWORD?</button></Link>
+
+                    <div className = "space"></div>
+
+                    <div>Not registered? Click below</div>
+                <hr/>
+                    <Link to ="/signup"><button className="loginButton">SIGN UP</button></Link>
+
+                    <div className = "space"></div>
+                <hr/>
+                    <Link to ="/"><button className="loginButton">HOME</button></Link>
+            </div>
         </div>
     );
-};
-export default Login;
+}
+
+export default Login
