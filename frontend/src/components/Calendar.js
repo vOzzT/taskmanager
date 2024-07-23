@@ -50,6 +50,20 @@ function Calen() {
     return date;
   }
 
+  function convertStringToDate(str) {
+    let year = str.substring(6, 9);
+    let month = str.substring(0, 1);
+    let day = str.substring(3, 4);
+
+    let hour = str.substring(11, 12);
+    let minute = str.substring(14, 15);
+    let second = str.substring(17, 18);
+
+    let date = new Date(year, month, day, hour, minute, second);
+
+    return date;
+  }
+
   const fetchData = async () => {
     try {
       const response = await fetch(buildPath('api/data'), {
@@ -82,8 +96,8 @@ function Calen() {
 	EVENTTITLE = data.events[i].Name;
 	STARTSTR = data.events[i].StartDate;
 	ENDSTR = data.events[i].EndDate;
-	START = STARTSTR.toDate();
-	END = ENDSTR.toDate();
+	START = convertStringToDate(STARTSTR);
+	END = convertStringToDate(ENDSTR);
 	BGCOLOR = data.events[i].Color;
 	USERID = data.events[i].UserId;
 	const obj = {
