@@ -12,14 +12,37 @@ const localizer = momentLocalizer(moment);
 function Calen() {
   const [loggedInUser, setLoggedInUser] = useState("");
   const [userId, setUserId] = useState("");
-  const [data, setData] = useState([]);
-
+  const [data, setData] = useState([]); 
+  const [searchByTitle, setSearchByTitle] = useState("");
+  const [regEvents, setRegEvents] = useState([]);
   const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    searchByTitleHandler();
+  }, [searchByTitle]);
+
+  const searchByTitleHandler = () => {
+    if (searchByTitle.trim() !== "") {
+      const regex = new RegExp(searchByTitle, "i");
+      const filteredEvents = events.filter((event) =>
+        regex.test(event.title) ||  
+        regex.test(event.start,) || 
+        regex.test(event.end,)
+        //regex.test(event.backgroundColor)
+      );
+      setSearchResults(filteredEvents);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredEvents, setFilteredEvents] = useState(data.events);
+  
   const [events, setEvents] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(null);
@@ -35,7 +58,7 @@ function Calen() {
   const [selectEvent, setSelectEvent] = useState(null);
   const [searchOption, setSearchOption] = useState("day");
 
-  const [searchByTitle, setSearchByTitle] = useState("");
+ 
   const [searchByDate, setSearchByDate] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
@@ -118,6 +141,7 @@ function Calen() {
       setEvents(newEvents);
       console.log(data);
       console.log(data.events);
+      setRegEvents(data.events);
       console.log(events);
       //alert(data + " " + data.firstname + " " + data.lastname);
       if (data && data.firstname && data.lastname) {
@@ -426,12 +450,9 @@ function Calen() {
     setSearchOption(option);
   };
 
-  const openUserGuide = () => {
-    setShowUserGuide(true);
-  };
-
   const searchEvents = () => {
     setShowSearchEvents(true);
+    searchByTitleHandler();
   };
 
   const clearSearch = () => {
@@ -439,17 +460,22 @@ function Calen() {
     setSearchByDate("");
     setSearchResults([]);
   };
-
-  const searchByTitleHandler = () => {
-    if (searchByTitle.trim() !== "") {
-      const filteredEvents = events.filter((event) =>
-        event.title.toLowerCase().includes(searchByTitle.toLowerCase())
+  
+ /* const searchByTitleHandler = () => {
+    useEffect(() => {
+      const regex = new RegExp(searchByTitle, "i");
+      const filtered = events.filter((event) =>
+        regex.test(event.id) || 
+        regex.test(event.title) || 
+        regex.test(event.description) || 
+        regex.test(event.start,) || 
+        regex.test(event.end,) || 
+        regex.test(event.backgroundColor)
       );
-      setSearchResults(filteredEvents);
-    } else {
-      setSearchResults([]);
-    }
-  };
+      setFilteredEvents(filtered);
+    }, [searchByTitle]);
+
+  };*/
 
   const searchByDateHandler = () => {
     if (searchByDate !== "") {
@@ -542,13 +568,24 @@ function Calen() {
               }}
             >
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <button
-                  className="btn btn-success"
-                  style={{ marginRight: "10px" }}
-                  onClick={searchEvents}
-                >
-                  Search
-                </button>
+              <div class="column">
+                <div className="input-group">
+                <input
+                        type="search"
+                        className="form-control rounded"
+                        placeholder="Search"
+                        value={searchByTitle}
+                        onChange={(e) => setSearchByTitle(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary"
+                        onClick={searchEvents}
+                      >
+                        Search
+                      </button>
+                    </div>
+              </div>
               </div>
             </div>
 
@@ -814,14 +851,6 @@ function Calen() {
               style={{ maxWidth: "800px", margin: "100px auto" }}
             >
               <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title text-center">Search Event</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowSearchEvents(false)}
-                  />
-                </div>
                 <div className="modal-body">
                   <div
                     style={{
@@ -830,45 +859,6 @@ function Calen() {
                       marginBottom: "20px",
                     }}
                   >
-                    <div className="input-group">
-                      <input
-                        type="search"
-                        className="form-control rounded"
-                        placeholder="Search by Title"
-                        value={searchByTitle}
-                        onChange={(e) => setSearchByTitle(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-outline-primary"
-                        onClick={searchByTitleHandler}
-                      >
-                        Search
-                      </button>
-                    </div>
-                    <div className="input-group">
-                      <input
-                        type="date"
-                        className="form-control rounded"
-                        value={searchByDate}
-                        onChange={(e) => setSearchByDate(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-outline-primary"
-                        onClick={searchByDateHandler}
-                      >
-                        Search
-                      </button>
-                    </div>
-
-                    <button
-                      className="btn btn-danger"
-                      style={{ marginRight: "10px" }}
-                      onClick={clearSearch}
-                    >
-                      Clear
-                    </button>
                   </div>
 
                   {/* Display search results */}
