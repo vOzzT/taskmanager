@@ -321,13 +321,13 @@ app.post('/api/signup', async (req, res, next) => {
 });
 
 app.post('/api/addEvent', async (req, res, next) => {
-    // incoming: name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // incoming: name, description, color, tags, userId, endDate, startDate
     // outgoing: id, name, UserId, error
     var error = '';
 
-    const { name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+    const { name, description, color, tags, userId, endDate, startDate } = req.body;
 
-    let newEvent = { Name: name, Description: description, Color: color, Tags: tags, isRecurring: isRecurring, hasReminder: hasReminder, UserId: userId, EndDate: endDate, StartDate: startDate };
+    let newEvent = { Name: name, Description: description, Color: color, Tags: tags, UserId: userId, EndDate: endDate, StartDate: startDate };
 
     const db = client.db('COP4331');
 
@@ -346,9 +346,9 @@ app.post('/api/addEvent', async (req, res, next) => {
 });
 
 app.post('/api/searchEvent', async (req, res, next) => {
-    // incoming: name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // incoming: name, description, color, tags, userId, endDate, startDate
     // outgoing: events, error
-    const { name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+    const { name, description, color, tags, userId, endDate, startDate } = req.body;
     const db = client.db('COP4331');
     
     // Build the search query object
@@ -358,8 +358,6 @@ app.post('/api/searchEvent', async (req, res, next) => {
     if (description) query.Description = { $regex: description, $options: 'i' };
     if (color) query.Color = { $regex: color, $options: 'i' };
     if (tags) query.Tags = { $regex: tags, $options: 'i' };
-    if (isRecurring !== undefined) query.isRecurring = isRecurring;
-    if (hasReminder !== undefined) query.hasReminder = hasReminder;
     if (userId) query.UserId = userId;
     if (endDate) query.EndDate = { $regex: endDate, $options: 'i' };
     if (startDate) query.StartDate = { $regex: startDate, $options: 'i' };
@@ -374,9 +372,9 @@ app.post('/api/searchEvent', async (req, res, next) => {
 });
 
 app.post('/api/updateEvent', async (req, res, next) => {
-    // incoming: id, name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate
+    // incoming: id, name, description, color, tags, userId, endDate, startDate
     // outgoing: updatedEvent, error
-    const { id, name, description, color, tags, isRecurring, hasReminder, userId, endDate, startDate } = req.body;
+    const { id, name, description, color, tags, userId, endDate, startDate } = req.body;
     const db = client.db('COP4331');
 
     if (!ObjectId.isValid(id)) {
@@ -389,8 +387,6 @@ app.post('/api/updateEvent', async (req, res, next) => {
     if (description) updatedFields.Description = description;
     if (color) updatedFields.Color = color;
     if (tags) updatedFields.Tags = tags;
-    if (isRecurring !== undefined) updatedFields.isRecurring = isRecurring;
-    if (hasReminder !== undefined) updatedFields.hasReminder = hasReminder;
     if (userId) updatedFields.UserId = userId;
     if (endDate) updatedFields.EndDate = endDate;
     if (startDate) updatedFields.StartDate = startDate;
