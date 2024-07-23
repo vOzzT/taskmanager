@@ -45,6 +45,24 @@ function Calen() {
 
   const [message,setMessage] = useState('');
 
+  function toJsonDateTime(dateTime) {
+    let date = format(dateTime, 'M-d-y-k-m-s');
+    return date;
+  }
+
+  function convertStringToDate(str) {
+    let year = str.substring(6, 9);
+    let month = str.substring(0, 1);
+    let day = str.substring(3, 4);
+
+    let hour = str.substring(11, 12);
+    let minute = str.substring(14, 15);
+    let second = str.substring(17, 18);
+
+    let date = new Date(year, month, day, hour, minute, second);
+
+    return date;
+  }
 
   const fetchData = async () => {
     try {
@@ -62,7 +80,43 @@ function Calen() {
       const data = await response.json();
       setData(data);
       setUserId({id: data.id});
+      //let userEvents = {events: data.events};
+      let i = 0;
+      const obj = {};
+      let ID = '';
+      let EVENTTITLE = '';
+      let START = '';
+      let STARTSTR = '';
+      let END = '';
+      let ENDSTR = '';
+      let BGCOLOR = '';
+      let USERID = '';
+      for (i in data.events){
+	ID = data.events[i]._id;
+	EVENTTITLE = data.events[i].Name;
+	STARTSTR = data.events[i].StartDate;
+	ENDSTR = data.events[i].EndDate;
+	START = convertStringToDate(STARTSTR);
+	END = convertStringToDate(ENDSTR);
+	BGCOLOR = data.events[i].Color;
+	USERID = data.events[i].UserId;
+	const obj = {
+            id: ID, 
+            title: EVENTTITLE,
+            start: START,
+            end: END,
+            backgroundColor: BGCOLOR,
+            userId : USERID
+        };
+	console.log(obj);
+        setEvents([...events, obj]);
+	console.log(data.events[i]);
+	console.log(events);
+      }
+      //setEvents(data.events);
       console.log(data);
+      console.log(data.events);
+      console.log(events);
       //alert(data + " " + data.firstname + " " + data.lastname);
       if (data && data.firstname && data.lastname) {
         
@@ -78,10 +132,7 @@ function Calen() {
   };
 
 
-  function toJsonDateTime(dateTime) {
-    let date = format(dateTime, 'M-d-y-k-m-s');
-    return date;
-  }
+
 
 
   //Add Event
@@ -122,7 +173,7 @@ function Calen() {
             userId : data.id
           };
           setEvents([...events, newEvent]);
-
+	  console.log(events);
           setMessage('Event added!');
           console.log('Event added successfully')
         } else {
