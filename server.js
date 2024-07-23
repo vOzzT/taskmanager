@@ -53,9 +53,9 @@ app.get('/api/verify/:token', (req, res)=>{
     jwt.verify(token, 'ourSecretKey', function(err, decoded) {
         if (err) {
             console.log(err);
-            res.send("Email verification failed, possibly the link is invalid or expired");}
+            res.status(400).send("Email verification failed, possibly the link is invalid or expired");}
         else {
-            res.send("Email verified successfully\n CLOSE!");
+            res.status(200).send("Email verified successfully\n CLOSE!");
             let decId = new ObjectId(decoded._id);
             let ret = db.collection('Users').updateOne({_id: decId},{$set: { isVerified: true}});
             ret.then(function(ret) {
@@ -335,6 +335,7 @@ app.post('/api/addEvent', async (req, res, next) => {
 
     db.collection('Events').insertOne(newEvent, function(err, res){
         if (err) throw err;
+        res.status(500);
     });
     console.log("Event " + name + " added!");
     const results = await db.collection('Events').find({Name: req.body.name}).toArray();
